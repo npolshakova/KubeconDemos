@@ -1,0 +1,17 @@
+defaultConfig:
+  discoveryAddress: istiod.istio-system.svc:15012
+  proxyMetadata:
+    CANONICAL_REVISION: latest
+    CANONICAL_SERVICE: hello-vm
+    ISTIO_META_CLUSTER_ID: cluster1
+    ISTIO_META_DNS_CAPTURE: "true"
+    ISTIO_META_MESH_ID: ""
+    ISTIO_META_NETWORK: vm-network
+    ISTIO_META_WORKLOAD_NAME: hello-vm
+    ISTIO_METAJSON_LABELS: '{"app":"hello-vm","service.istio.io/canonical-name":"hello-vm","service.istio.io/canonical-revision":"latest"}'
+    POD_NAMESPACE: vm-namespace
+    SERVICE_ACCOUNT: vm-sa
+    TRUST_DOMAIN: cluster.local
+  tracing:
+    zipkin:
+      address: zipkin.istio-system:9411
