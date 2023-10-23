@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PI_INTERNAL_IP=$(ip route | grep default | awk '{print $3}')
+
 # Provide the east-west gateway address as an argument
 if [ $# -ne 1 ]; then
     echo "Usage: $0 <istio_ew_address>"
@@ -8,10 +10,6 @@ fi
 
 # Store the provided address in a variable
 ISTIO_EW_ADDRESS="$1"
-
-# Sidecar demo
-curl -LO https://storage.googleapis.com/istio-release/releases/1.19.0/deb/istio-sidecar-arm64.deb
-sudo dpkg -i istio-sidecar.deb
 
 # Setup vm files 
 cd vm-files
@@ -33,3 +31,4 @@ echo "${ISTIO_EW_ADDRESS} istiod.istio-system.svc" | sudo tee -a /etc/hosts
 sudo mkdir -p /etc/istio/proxy
 sudo chown -R istio-proxy /var/lib/istio /etc/certs /etc/istio/proxy /etc/istio/config /var/run/secrets /etc/certs/root-cert.pem /var/run/secrets/istio/root-cert.pem
 
+sudo iptables -t nat -A OUTPUT ! -o lo -p udp -m udp --dport 53 -m owner ! --uid-owner 999 -j DNAT --to-destination ${PI_INTERNAL_IP}:15053
