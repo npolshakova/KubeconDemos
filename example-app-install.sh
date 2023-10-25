@@ -1,6 +1,6 @@
 #!/bin/sh -ex
 
-kubectl create namespace httpbin
+kubectl get namespace httpbin &> /dev/null || kubectl create namespace httpbin
 
 kubectl label namespace httpbin istio-injection=enabled --overwrite=true
 

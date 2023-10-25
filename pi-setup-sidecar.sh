@@ -13,8 +13,8 @@ ISTIO_EW_ADDRESS="$1"
 curl -LO https://storage.googleapis.com/istio-release/releases/1.19.3/deb/istio-sidecar-arm64.deb
 sudo dpkg -i istio-sidecar-arm64.deb
 
-# Setup vm files 
-cd vm-files
+# Setup pi files 
+cd pi-files
 
 sudo mkdir -p /etc/certs
 sudo cp root-cert.pem /etc/certs/root-cert.pem
@@ -27,7 +27,7 @@ sudo cp istio-token ./var/run/secrets/tokens/istio-token
 sudo cp cluster.env /var/lib/istio/envoy/cluster.env 
 sudo cp mesh.yaml /etc/istio/config/mesh 
 
-# Add address to /etc/hosts to reach istiod for onboarding VM and xDS updates
+# Add address to /etc/hosts to reach istiod for onboarding PI and xDS updates
 echo "${ISTIO_EW_ADDRESS} istiod.istio-system.svc" | sudo tee -a /etc/hosts
 
 sudo mkdir -p /etc/istio/proxy

@@ -2,15 +2,15 @@ defaultConfig:
   discoveryAddress: istiod.istio-system.svc:15012
   proxyMetadata:
     CANONICAL_REVISION: latest
-    CANONICAL_SERVICE: hello-vm
+    CANONICAL_SERVICE: hello-pi
     ISTIO_META_CLUSTER_ID: cluster1
     ISTIO_META_DNS_CAPTURE: "true"
     ISTIO_META_MESH_ID: ""
-    ISTIO_META_NETWORK: vm-network
-    ISTIO_META_WORKLOAD_NAME: hello-vm
-    ISTIO_METAJSON_LABELS: '{"app":"hello-vm","service.istio.io/canonical-name":"hello-vm","service.istio.io/canonical-revision":"latest"}'
-    POD_NAMESPACE: vm-namespace
-    SERVICE_ACCOUNT: vm-sa
+    ISTIO_META_NETWORK: ""
+    ISTIO_META_WORKLOAD_NAME: hello-pi
+    ISTIO_METAJSON_LABELS: '{"app":"hello-pi","service.istio.io/canonical-name":"hello-pi","service.istio.io/canonical-revision":"latest"}'
+    POD_NAMESPACE: pi-namespace
+    SERVICE_ACCOUNT: pi-sa
     TRUST_DOMAIN: cluster.local
   tracing:
     zipkin:

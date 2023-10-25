@@ -7,24 +7,24 @@ if [ $# -ne 1 ]; then
 fi
 
 # Store the provided address in a variable
-PI_ADDRESS="$1"
+export PI_ADDRESS="$1"
 
-# Setup env for installing Istio and VM onboarding
-export VM_APP="hello-vm"
-export VM_NAMESPACE="vm-namespace"
-export SERVICE_ACCOUNT="vm-sa"
-export WORK_DIR="$PWD/vm-files"
+# Setup env for installing Istio and PI onboarding
+export PI_APP="hello-pi"
+export PI_NAMESPACE="pi-namespace"
+export SERVICE_ACCOUNT="pi-sa"
+export WORK_DIR="$PWD/pi-files"
 # Customize values for multi-cluster/multi-network as needed
 # Demo will assume single network setup
 export CLUSTER_NETWORK="kube-network"
-export VM_NETWORK="vm-network"
+# export PI_NETWORK="pi-network"
 export CLUSTER="cluster1"
 
-# Create output directory for VM files
+# Create output directory for PI files
 mkdir -p $WORK_DIR
 
 # Install Istio
-cat <<EOF > vm-cluster.yaml
+cat <<EOF > pi-cluster.yaml
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 metadata:
@@ -51,7 +51,7 @@ spec:
         clusterName: "${CLUSTER}"
       network: "${CLUSTER_NETWORK}"
 EOF
-istioctl install -f vm-cluster.yaml --set values.pilot.env.PILOT_ENABLE_WORKLOAD_ENTRY_AUTOREGISTRATION=true --set values.pilot.env.ISTIOD_SAN="istiod.istio-system.svc"
+istioctl install -f pi-cluster.yaml --set values.pilot.env.PILOT_ENABLE_WORKLOAD_ENTRY_AUTOREGISTRATION=true --set values.pilot.env.ISTIOD_SAN="istiod.istio-system.svc"
 
 # Install east-west gateway
 samples/multicluster/gen-eastwest-gateway.sh \
@@ -63,30 +63,30 @@ kubectl apply -f samples/multicluster/expose-istiod.yaml
 # Expose svcs (only need for multinetwork setup)
 # kubectl apply -n istio-system -f samples/multicluster/expose-services.yaml
 
-# Create VM Namespace and ServiceAccount
-kubectl create namespace "${VM_NAMESPACE}"
-kubectl create serviceaccount "${SERVICE_ACCOUNT}" -n "${VM_NAMESPACE}"
+# Create Pi Namespace and ServiceAccount
+kubectl get namespace "$PI_NAMESPACE" &> /dev/null || kubectl create namespace "$PI_NAMESPACE"
+kubectl get serviceaccount "${SERVICE_ACCOUNT}" -n "${PI_NAMESPACE}" &> /dev/null || kubectl create serviceaccount "${SERVICE_ACCOUNT}" -n "${PI_NAMESPACE}"
 
 # Create WorkloadGroup. We will use autoregistration so a WorkloadEntry will be generated from this WorkloadGroup
 cat <<EOF > workloadgroup.yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: WorkloadGroup
 metadata:
-  name: "${VM_APP}"
-  namespace: "${VM_NAMESPACE}"
+  name: "${PI_APP}"
+  namespace: "${PI_NAMESPACE}"
 spec:
   metadata:
     labels:
-      app: "${VM_APP}"
+      app: "${PI_APP}"
   template:
     serviceAccount: "${SERVICE_ACCOUNT}"
-    network: "${VM_NETWORK}"
+    network: "${KUBE_NETWORK}"
 EOF
-kubectl --namespace "${VM_NAMESPACE}" apply -f workloadgroup.yaml
+kubectl --namespace "${PI_NAMESPACE}" apply -f workloadgroup.yaml
 
-# Run istioctl to create the vm files and create WorkloadEntry 
+# Run istioctl to create the pi files and create WorkloadEntry 
 istioctl x workload entry configure -f workloadgroup.yaml -o "${WORK_DIR}" --clusterID "${CLUSTER}"
 
 # Copy the files to the pi
-scp ~/vm-files/* ninapolshakova@${PI_ADDERSS}:~/vm-files
+scp pi-files/* ninapolshakova@$PI_ADDRESS:~/pi-files
 

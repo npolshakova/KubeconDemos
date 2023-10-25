@@ -1,12 +1,12 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: WorkloadGroup
 metadata:
-  name: "hello-vm"
-  namespace: "vm-namespace"
+  name: "hello-pi"
+  namespace: "pi-namespace"
 spec:
   metadata:
     labels:
-      app: "hello-vm"
+      app: "hello-pi"
   template:
-    serviceAccount: "vm-sa"
-    network: "vm-network"
+    serviceAccount: "pi-sa"
+    network: ""
