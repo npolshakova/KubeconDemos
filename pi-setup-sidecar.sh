@@ -20,8 +20,6 @@ sudo mkdir -p /etc/certs
 sudo cp root-cert.pem /etc/certs/root-cert.pem
 sudo  mkdir -p /var/run/secrets/tokens
 sudo cp istio-token /var/run/secrets/tokens/istio-token
-sudo  mkdir -p ./var/run/secrets/tokens
-sudo cp istio-token ./var/run/secrets/tokens/istio-token
 
 # Config setup for running sidecar
 sudo cp cluster.env /var/lib/istio/envoy/cluster.env 
@@ -31,6 +29,6 @@ sudo cp mesh.yaml /etc/istio/config/mesh
 echo "${ISTIO_EW_ADDRESS} istiod.istio-system.svc" | sudo tee -a /etc/hosts
 
 sudo mkdir -p /etc/istio/proxy
-sudo chown -R istio-proxy /var/lib/istio /etc/certs /etc/istio/proxy /etc/istio/config /var/run/secrets /etc/certs/root-cert.pem /var/run/secrets/istio/root-cert.pem
+sudo chown -R istio-proxy /var/lib/istio /etc/certs /etc/istio/proxy /etc/istio/config /var/run/secrets /etc/certs/root-cert.pem
 
 sudo systemctl start istio

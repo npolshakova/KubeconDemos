@@ -2,20 +2,30 @@
 sudo sysctl net.ipv4.ip_forward=1
 
 # Define the pod CIDR and node IP
-POD_CIDR="10.244.0.0/16"
-NODE_IP="172.18.0.2"
+export POD_CIDR="10.244.0.0/16" # change this based on kind config
+export NODE_IP="172.18.0.2"
 
 # Get the name of the Docker bridge device
-BRIDGE_DEVICE=$(ip link | grep "br-" | awk -F: '{print $2}' | tr -d ' ')
+# export BRIDGE_DEVICE=$(ip link | grep "br-" | awk -F: '{print $2}' | tr -d ' ')
 
 # Add a route for the pod CIDR
-sudo ip route add $POD_CIDR via $NODE_IP dev $BRIDGE_DEVICE
+
+# Opt 1: add via bridge device explictly (you can skip this part)
+# sudo ip route add $POD_CIDR via $NODE_IP dev $BRIDGE_DEVICE
+
+# Opt 2: add just via node ip
+sudo ip route add $POD_CIDR via $NODE_IP
 
 # Define the service CIDR
-SERVICE_CIDR="10.0.0.0/8"
+export SERVICE_CIDR="10.0.0.0/8" # change this based on kind config
 
 # Add a route for the service CIDR
-sudo ip route add $SERVICE_CIDR via $NODE_IP dev $BRIDGE_DEVICE
+
+# Opt 1: add via bridge device explictly (you can skip this part)
+# sudo ip route add $SERVICE_CIDR via $NODE_IP dev $BRIDGE_DEVICE
+
+# Opt 2: add just via node ip
+sudo ip route add $SERVICE_CIDR via $NODE_IP
 
 # Print the added routes for confirmation
 echo "Routes added:"
