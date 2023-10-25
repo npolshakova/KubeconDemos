@@ -1,5 +1,3 @@
-#!/bin/sh -ex
-
 # Provide the pi address as an argument
 if [ $# -ne 1 ]; then
     echo "Usage: $0 <pi_address>"
