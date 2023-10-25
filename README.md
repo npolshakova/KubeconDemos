@@ -9,6 +9,12 @@
 ## Kind
 [Kind](https://kind.sigs.k8s.io/) (Kubernetes in Docker) is a tool for running local Kubernetes clusters using Docker container “nodes”.  Kind was primarily designed for testing Kubernetes itself, but may be used for local development or CI.
 
+## jq 
+
+``` 
+apt-get install jq
+```
+
 ## Istioctl
 
 ```bash

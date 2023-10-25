@@ -86,5 +86,7 @@ kubectl --namespace "${PI_NAMESPACE}" apply -f workloadgroup.yaml
 istioctl x workload entry configure -f workloadgroup.yaml -o "${WORK_DIR}" --clusterID "${CLUSTER}"
 
 # Copy the files to the pi
+
+# ssh-copy-id 192.168.0.58
 scp pi-files/* ninapolshakova@$PI_ADDRESS:~/pi-files
 
