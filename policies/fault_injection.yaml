@@ -1,0 +1,22 @@
+# curl -H "tea-drinker: nina" teapot-app.pi-namespace:8080
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: teapot-app-fault-injection
+  namespace: pi-namespace
+spec:
+  hosts:
+  - teapot-app
+  http:
+  - match:
+    - headers:
+        tea-drinker:
+          exact: nina
+    fault:
+     abort:
+        httpStatus: 418
+        percentage:
+          value: 100
+    route:
+    - destination:
+        host: teapot-app

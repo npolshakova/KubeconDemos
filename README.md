@@ -33,12 +33,19 @@ Test ssh to make sure you can connect with the pi. Find ip address
 
 2. Setup Istio 
 
-```
+```bash
 ./istio-setup.sh <pi-address>
 ```
 
-3. Setup pi 
+3. Setup example apps (httpbin, helloworld, etc.)
+# TODO: ambient or injection mode? If ambient, can install before istio 
 
-``` 
+```bash
+./example-app-install.sh
+```
+
+4. Setup pi 
+
+```bash 
 ./pi-setup <istio-ew-address>
 ```

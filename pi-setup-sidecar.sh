@@ -10,8 +10,8 @@ fi
 ISTIO_EW_ADDRESS="$1"
 
 # Sidecar demo
-curl -LO https://storage.googleapis.com/istio-release/releases/1.19.0/deb/istio-sidecar-arm64.deb
-sudo dpkg -i istio-sidecar.deb
+curl -LO https://storage.googleapis.com/istio-release/releases/1.19.3/deb/istio-sidecar-arm64.deb
+sudo dpkg -i istio-sidecar-arm64.deb
 
 # Setup vm files 
 cd vm-files
