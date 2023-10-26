@@ -61,7 +61,7 @@ There is a known bug where DNS requests are captured by the ztunnel and not hand
 3. Setup Istio 
 
 ```bash
-./istio-setup.sh <pi-address>
+./istio-setup.sh <pi-address> <pi-username>
 ```
 
 4. Setup example apps (httpbin, helloworld, etc.)

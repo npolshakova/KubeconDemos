@@ -1,11 +1,12 @@
-# Provide the pi address as an argument
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 <pi_address>"
+# Provide the pi address and username as an argument
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <pi_address> <pi_username>" 
     exit 1
 fi
 
 # Store the provided address in a variable
 export PI_ADDRESS="$1"
+export PI_USERNAME="$2"
 
 # Setup env for installing Istio and PI onboarding
 export PI_APP="hello-pi"
@@ -88,5 +89,5 @@ istioctl x workload entry configure -f workloadgroup.yaml -o "${WORK_DIR}" --clu
 # Copy the files to the pi
 
 # ssh-copy-id 192.168.0.58
-scp pi-files/* ninapolshakova@$PI_ADDRESS:~/pi-files
+scp pi-files/* $PI_USERNAME@$PI_ADDRESS:~/pi-files
 
