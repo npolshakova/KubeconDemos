@@ -17,8 +17,15 @@ apt-get install jq
 
 ## Istioctl
 
+First install `istioctl`:
+
 ```bash
 curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.19.0  sh -
+```
+
+Remember to export the Istio path:
+``` 
+export PATH="$PATH:<path-to-istio>"
 ```
 
 ## Rasberry Pi ARM 64-bit
@@ -31,27 +38,48 @@ Test ssh to make sure you can connect with the pi. Find ip address
 
 # Running
 
+Before you get started, clone the repo on the local linux machine and make sure you have `sudo` access.
+
 1. Setup kind and metallb 
 
 ```bash
 ./kind-provisioner.sh
 ```
 
-2. Setup Istio 
+2. Setup networking
+
+**Note**: For ztunnel mode, uncomment this line in the setup-network script:
+``` 
+ssh $PI_USERNAME@$PI_ADDRESS sudo iptables -t nat -A OUTPUT ! -o lo -p udp -m udp --dport 53 -m owner ! --uid-owner 999 -j DNAT --to-destination $PI_ADDRESS:15053
+```
+There is a known bug where DNS requests are captured by the ztunnel and not handled correctly. 
+
+```bash
+./setup-network.sh <pi-address>  <pi-username>
+```
+
+3. Setup Istio 
 
 ```bash
 ./istio-setup.sh <pi-address>
 ```
 
-3. Setup example apps (httpbin, helloworld, etc.)
-# TODO: ambient or injection mode? If ambient, can install before istio 
+4. Setup example apps (httpbin, helloworld, etc.)
 
 ```bash
 ./example-app-install.sh
 ```
 
-4. Setup pi 
+5. Setup pi (running in sidecar mode)
 
 ```bash 
-./pi-setup <istio-ew-address>
+./pi-setup-sidecar <istio-ew-svc-internal-address>
+```
+
+5. Setup pi (running in ztunnel mode)
+
+Copy the setup file over to the pi, then run:
+
+```bash 
+./pi-setup-ztunnel <istio-ew-svc-internal-address>
 ```
