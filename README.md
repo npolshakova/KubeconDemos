@@ -55,7 +55,7 @@ ssh $PI_USERNAME@$PI_ADDRESS sudo iptables -t nat -A OUTPUT ! -o lo -p udp -m ud
 There is a known bug where DNS requests are captured by the ztunnel and not handled correctly. 
 
 ```bash
-./setup-network.sh <pi-address>  <pi-username>
+sudo ./setup-network.sh <pi-address>  <pi-username>
 ```
 
 3. Setup Istio 
