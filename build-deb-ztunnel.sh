@@ -1,3 +1,4 @@
+#!/bin/bash
 # make sure you have the following dependencies installed on the pi 
 # sudo apt-get install iptables cmake libclang-dev protobuf-compiler
 # find the path to libclang.so and set the LIBCLANG_PATH environment variable (sudo find /usr /lib /lib64 /usr/local -name libclang.so):

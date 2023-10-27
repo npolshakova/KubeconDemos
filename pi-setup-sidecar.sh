@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Provide the east-west gateway address as an argument
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 <istio_ew_address>"
+# Provide the east-west gateway address as an argument, and optionally the path to the pi files
+if [ "$#" -le 1 ]; then
+    echo "Usage: $0 <istio_ew_address> [pi-files-path]"
     exit 1
 fi
 
@@ -10,7 +10,7 @@ fi
 ISTIO_EW_ADDRESS="$1"
 
 # Set the default value for PI_FILE_PATH
-PI_FILE_PATH="~/pi-files"
+PI_FILE_PATH="$PWD/pi-files"
 
 # Check if a command-line argument was provided for pi files path
 if [ ! -z "$2" ]; then

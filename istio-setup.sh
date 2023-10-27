@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Provide the pi address and username as an argument
 if [ $# -ne 2 ]; then
     echo "Usage: $0 <pi_address> <pi_username>" 
@@ -5,19 +7,19 @@ if [ $# -ne 2 ]; then
 fi
 
 # Store the provided address in a variable
-export PI_ADDRESS="$1"
-export PI_USERNAME="$2"
+PI_ADDRESS="$1"
+PI_USERNAME="$2"
 
 # Setup env for installing Istio and PI onboarding
-export PI_APP="hello-pi"
-export PI_NAMESPACE="pi-namespace"
-export SERVICE_ACCOUNT="pi-sa"
-export WORK_DIR="$PWD/pi-files"
+PI_APP="hello-pi"
+PI_NAMESPACE="pi-namespace"
+SERVICE_ACCOUNT="pi-sa"
+WORK_DIR="$PWD/pi-files"
 # Customize values for multi-cluster/multi-network as needed
 # Demo will assume single network setup
-export CLUSTER_NETWORK="kube-network"
-# export PI_NETWORK="pi-network"
-export CLUSTER="cluster1"
+CLUSTER_NETWORK="kube-network"
+# PI_NETWORK="pi-network"
+CLUSTER="cluster1"
 
 # Create output directory for PI files
 mkdir -p $WORK_DIR
@@ -86,8 +88,26 @@ kubectl --namespace "${PI_NAMESPACE}" apply -f workloadgroup.yaml
 # Run istioctl to create the pi files and create WorkloadEntry 
 istioctl x workload entry configure -f workloadgroup.yaml -o "${WORK_DIR}" --clusterID "${CLUSTER}"
 
-# Copy the files to the pi
+# Ztunnel setup needs to manually create workloadentry: 
+kubectl apply -f - <<EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: WorkloadEntry
+metadata:
+  labels:
+    app: hello-pi
+  name: hello-pi
+  namespace: pi-namespace
+spec:
+  address: $PI_ADDRESS
+  labels:
+    app: hello-pi
+  network: pi-network
+  serviceAccount: pi-sa
+EOF
 
+# Copy the files to the pi
 # ssh-copy-id 192.168.0.58
 scp pi-files/* $PI_USERNAME@$PI_ADDRESS:~/pi-files
 
+# Optionally, you may also want to add an SSH key if not already done to avoid password prompts during the SCP operation.
+# ssh-copy-id "$PI_USERNAME@$PI_ADDRESS"
