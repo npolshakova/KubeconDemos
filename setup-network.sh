@@ -41,8 +41,8 @@ iptables -t filter -L FORWARD | grep "$SERVICE_POD_CIDR"
 # example: iptables -t nat -A OUTPUT ! -o lo -p udp -m udp --dport 53 -m owner ! --uid-owner 999 -j DNAT --to-destination 192.168.0.58:15053
 # ssh $PI_USERNAME@$PI_ADDRESS sudo iptables -t nat -A OUTPUT ! -o lo -p udp -m udp --dport 53 -m owner ! --uid-owner 999 -j DNAT --to-destination $PI_ADDRESS:15053
 
-# switch to: ip -j address show 
-export CLUSTER_ADDRESS=$(sudo ifconfig | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | head -n 1)
+# Alternative: sudo ifconfig | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | head -n 1
+export CLUSTER_ADDRESS=$(ip -j address show dev eth0 | jq -r '.[0].addr_info[0].local')
 
 # example: ip route add 10.0.0.0/8 via 192.168.8.168
 ssh $PI_USERNAME@$PI_ADDRESS sudo ip route add $SERVICE_POD_CIDR via $CLUSTER_ADDRESS

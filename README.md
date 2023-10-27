@@ -72,18 +72,24 @@ sudo ip route add $SERVICE_POD_CIDR via $NODE_IP dev $BRIDGE_DEVICE
 You may be able to skip the `dev $BRIDGE_DEVICE` part if only one device is routable to the docker container IP, since linux *should* infer it needs to send packets to it on its own.
 
 Add rule so we don't drop packets coming from the pi: 
-``` 
+```bash
 sudo iptables -t filter -A FORWARD -d "$SERVICE_POD_CIDR" -j ACCEPT
 ```
 
 ### Pi -> Cluster 
 
-1. 
+1. Add routing rule to allow the pi to access the Pods and Service IPs running in the kind cluster: 
+
+```bash
+sudo ip route add $SERVICE_POD_CIDR via $CLUSTER_ADDRESS
+```
+
+Where the `CLUSTER_ADDRESS` is the address of your host linux machine running the kind cluster. This can be found with `ip addr show` or `ifconfig`.
 
 All of this can also be done using the script:
 
 **Note**: For ztunnel mode, uncomment this line in the setup-network script:
-``` 
+```bash 
 ssh $PI_USERNAME@$PI_ADDRESS sudo iptables -t nat -A OUTPUT ! -o lo -p udp -m udp --dport 53 -m owner ! --uid-owner 999 -j DNAT --to-destination $PI_ADDRESS:15053
 ```
 There is a known bug where DNS requests are captured by the ztunnel and not handled correctly. 
@@ -104,16 +110,23 @@ sudo ./setup-network.sh <pi-address>  <pi-username>
 ./example-app-install.sh
 ```
 
-5. Setup pi (running in sidecar mode)
+5. Setup pi 
 
-```bash 
-./pi-setup-sidecar <istio-ew-svc-internal-address> <opt-path-to-pi-files>
+Copy the setup file over to the pi with `scp`:
+
+```bash
+scp pi-setup-sidecar.sh <username>@<pi-addr>:<path-to-script-dir>
 ```
 
-5. Setup pi (running in ztunnel mode)
-
-Copy the setup file over to the pi, then run:
+### Running in sidecar mode
 
 ```bash 
-./pi-setup-ztunnel <istio-ew-svc-internal-address> <opt-path-to-pi-files>
+./pi-setup-sidecar.sh <istio-ew-svc-internal-address> <opt-path-to-pi-files>
+```
+
+### Running in ztunnel mode
+
+
+```bash 
+./pi-setup-ztunnel.sh <istio-ew-svc-internal-address> <opt-path-to-pi-files>
 ```
