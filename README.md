@@ -43,10 +43,44 @@ Before you get started, clone the repo on the local linux machine and make sure 
 1. Setup kind and metallb 
 
 ```bash
-./kind-provisioner.sh
+NOMETALBINSTALL=true ./kind-provisioner.sh
 ```
 
 2. Setup networking
+
+There are two parts to setting up networking, enable the pod and services on the Kind cluster to be reachable from the host running the docker container, and the enable the pi to reach pods and services in the Kind cluster via the linux machine running the cluster. 
+
+### Host machine -> Docker steps:
+
+1. Edit `/etc/sysctl.conf` to enable ip forwarding by uncommenting this line: 
+``` 
+net.ipv4.ip_forward = 1
+```
+
+You can also do this via, but setting it in `/etc/sysctl.conf` will save you the headache of having to set it again: 
+``` 
+sudo sysctl net.ipv4.ip_forward=1
+```
+
+2. Add the following ip route rules to enable the pod/service CIDR to be reachable from the host machine:
+
+Add the routing rule:
+``` 
+sudo ip route add $SERVICE_POD_CIDR via $NODE_IP dev $BRIDGE_DEVICE
+```
+
+You may be able to skip the `dev $BRIDGE_DEVICE` part if only one device is routable to the docker container IP, since linux *should* infer it needs to send packets to it on its own.
+
+Add rule so we don't drop packets coming from the pi: 
+``` 
+sudo iptables -t filter -A FORWARD -d "$SERVICE_POD_CIDR" -j ACCEPT
+```
+
+### Pi -> Cluster 
+
+1. 
+
+All of this can also be done using the script:
 
 **Note**: For ztunnel mode, uncomment this line in the setup-network script:
 ``` 
@@ -73,7 +107,7 @@ sudo ./setup-network.sh <pi-address>  <pi-username>
 5. Setup pi (running in sidecar mode)
 
 ```bash 
-./pi-setup-sidecar <istio-ew-svc-internal-address>
+./pi-setup-sidecar <istio-ew-svc-internal-address> <opt-path-to-pi-files>
 ```
 
 5. Setup pi (running in ztunnel mode)
@@ -81,5 +115,5 @@ sudo ./setup-network.sh <pi-address>  <pi-username>
 Copy the setup file over to the pi, then run:
 
 ```bash 
-./pi-setup-ztunnel <istio-ew-svc-internal-address>
+./pi-setup-ztunnel <istio-ew-svc-internal-address> <opt-path-to-pi-files>
 ```
