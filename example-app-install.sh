@@ -8,11 +8,13 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: httpbin
+  namespace: httpbin
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: httpbin
+  namespace: httpbin
   labels:
     app: httpbin
     service: httpbin
@@ -28,6 +30,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: httpbin
+  namespace: httpbin
 spec:
   replicas: 1
   selector:

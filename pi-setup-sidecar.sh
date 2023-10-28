@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Provide the east-west gateway address as an argument, and optionally the path to the pi files
-if [ "$#" -le 1 ]; then
+if [ "$#" -eq 0 ]; then
     echo "Usage: $0 <istio_ew_address> [pi-files-path]"
     exit 1
 fi

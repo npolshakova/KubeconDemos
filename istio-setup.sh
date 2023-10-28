@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# need istioctl installed
+source ~/.bashrc
+
 # Provide the pi address and username as an argument
 if [ $# -ne 2 ]; then
     echo "Usage: $0 <pi_address> <pi_username>" 
@@ -17,7 +20,7 @@ SERVICE_ACCOUNT="pi-sa"
 WORK_DIR="$PWD/pi-files"
 # Customize values for multi-cluster/multi-network as needed
 # Demo will assume single network setup
-CLUSTER_NETWORK="kube-network"
+# CLUSTER_NETWORK="kube-network"
 # PI_NETWORK="pi-network"
 CLUSTER="cluster1"
 
@@ -101,7 +104,7 @@ spec:
   address: $PI_ADDRESS
   labels:
     app: hello-pi
-  network: pi-network
+  network: kube-network
   serviceAccount: pi-sa
 EOF
 
