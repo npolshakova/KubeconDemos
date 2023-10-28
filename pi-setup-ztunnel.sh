@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Get the internal IP address of the PI. You can remove `head -n 1` if only one ip is assigned
-PI_INTERNAL_IP=$(ip route | grep default | awk '{print $3}' | head -n 1)
+PI_INTERNAL_IP=$(ip route | grep default | awk '{print $9}' | head -n 1)
 
 # Provide the east-west gateway address as an argument, and optionally the path to the pi files
 if [ "$#" -eq 0 ]; then
@@ -37,6 +37,7 @@ sudo cp $PI_FILE_PATH/root-cert.pem ./var/run/secrets/istio/root-cert.pem
 sudo cp $PI_FILE_PATH/istio-token ./var/run/secrets/tokens/istio-token
 
 # Config setup for running sidecar
+sudo mkdir ./etc/istio/config
 sudo cp $PI_FILE_PATH/cluster.env ./var/lib/istio/ztunnel/cluster.env 
 sudo cp $PI_FILE_PATH/mesh.yaml ./etc/istio/config/mesh 
 
@@ -44,6 +45,6 @@ sudo cp $PI_FILE_PATH/mesh.yaml ./etc/istio/config/mesh
 echo "${ISTIO_EW_ADDRESS} istiod.istio-system.svc" | sudo tee -a /etc/hosts
 
 sudo mkdir -p ./etc/istio/proxy
-sudo chown -R istio-proxy ./var/lib/istio /etc/certs ./etc/istio/proxy ./var/run/secrets /etc/certs/root-cert.pem ./var/run/secrets/istio/root-cert.pem 
+sudo chown -R istio-proxy ./var/lib/istio /etc/certs ./etc/istio/proxy ./var/run/secrets /etc/certs/root-cert.pem ./var/run/secrets/istio/root-cert.pem ./etc/istio/config/mesh 
 
-sudo -u istio-proxy CA_ADDRESS="istiod.istio-system.svc:15012" XDS_ADDRESS="istiod.istio-system.svc:15012" CLUSTER_ID=cluster1 NETWORK=kube-network RUST_LOG=debug ISTIO_META_ENABLE_HBONE=true ISTIO_META_DNS_CAPTURE=true ISTIO_META_DNS_AUTO_ALLOCATE=true ISTIO_META_DNS_PROXY_ADDR="127.0.0.1:15053" ztunnel
+sudo -u istio-proxy CA_ADDRESS="istiod.istio-system.svc:15012" XDS_ADDRESS="istiod.istio-system.svc:15012" CLUSTER_ID=Kubernetes RUST_LOG=debug ISTIO_META_ENABLE_HBONE=true ISTIO_META_DNS_CAPTURE=true ISTIO_META_DNS_AUTO_ALLOCATE=true ISTIO_META_DNS_PROXY_ADDR="127.0.0.1:15053" ztunnel

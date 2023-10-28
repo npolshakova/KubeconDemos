@@ -22,7 +22,7 @@ WORK_DIR="$PWD/pi-files"
 # Demo will assume single network setup
 # CLUSTER_NETWORK="kube-network"
 # PI_NETWORK="pi-network"
-CLUSTER="cluster1"
+CLUSTER="Kubernetes"
 
 # Create output directory for PI files
 mkdir -p $WORK_DIR
@@ -49,18 +49,16 @@ spec:
             ISTIO_META_DNS_CAPTURE: "true"
             ISTIO_META_DNS_AUTO_ALLOCATE: "true"
             ISTIO_META_DNS_PROXY_ADDR: "127.0.0.1:15053"
-    global:
-      meshID: mesh1
-      multiCluster:
-        clusterName: "${CLUSTER}"
-      network: "${CLUSTER_NETWORK}"
 EOF
 istioctl install -f pi-cluster.yaml --set values.pilot.env.PILOT_ENABLE_WORKLOAD_ENTRY_AUTOREGISTRATION=true --set values.pilot.env.ISTIOD_SAN="istiod.istio-system.svc"
 
 # Install east-west gateway
-samples/multicluster/gen-eastwest-gateway.sh \
---mesh mesh1 --cluster "${CLUSTER}" --network "${CLUSTER_NETWORK}" | \
-istioctl install -y -f -
+# Multinetwork:  samples/multicluster/gen-eastwest-gateway.sh \
+# --mesh mesh1 --cluster "${CLUSTER}" --network "${CLUSTER_NETWORK}" | \
+# istioctl install -y -f -
+
+# Singlenetwork:
+samples/multicluster/gen-eastwest-gateway.sh --single-cluster | istioctl install -y -f -
 
 # Expose istiod 
 kubectl apply -f samples/multicluster/expose-istiod.yaml
@@ -89,7 +87,7 @@ EOF
 kubectl --namespace "${PI_NAMESPACE}" apply -f workloadgroup.yaml
 
 # Run istioctl to create the pi files and create WorkloadEntry 
-istioctl x workload entry configure -f workloadgroup.yaml -o "${WORK_DIR}" --clusterID "${CLUSTER}"
+istioctl x workload entry configure -f workloadgroup.yaml -o "${WORK_DIR}" --clusterID "${CLUSTER}" --autoregister
 
 # Ztunnel setup needs to manually create workloadentry: 
 kubectl apply -f - <<EOF
@@ -97,15 +95,14 @@ apiVersion: networking.istio.io/v1alpha3
 kind: WorkloadEntry
 metadata:
   labels:
-    app: hello-pi
-  name: hello-pi
-  namespace: pi-namespace
+    app: "${PI_APP}"
+  name: "${PI_APP}"
+  namespace: "${PI_NAMESPACE}"
 spec:
-  address: $PI_ADDRESS
+  address: "${$PI_ADDRESS}"
   labels:
-    app: hello-pi
-  network: kube-network
-  serviceAccount: pi-sa
+    app: "${PI_APP}"
+  serviceAccount: "${$SERVICE_ACCOUNT}"
 EOF
 
 # Copy the files to the pi
