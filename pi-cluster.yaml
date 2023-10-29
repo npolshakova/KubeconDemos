@@ -18,8 +18,3 @@ spec:
             ISTIO_META_DNS_CAPTURE: "true"
             ISTIO_META_DNS_AUTO_ALLOCATE: "true"
             ISTIO_META_DNS_PROXY_ADDR: "127.0.0.1:15053"
-    global:
-      meshID: mesh1
-      multiCluster:
-        clusterName: "cluster1"
-      network: "kube-network"

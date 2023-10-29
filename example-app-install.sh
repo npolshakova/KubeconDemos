@@ -1,131 +1,18 @@
-kubectl get namespace httpbin &> /dev/null || kubectl create namespace httpbin
+# in ambient mode
+kubectl label namespace default istio.io/dataplane-mode=ambient
+kubectl apply -f samples/sleep/sleep.yaml -n default
+kubectl label namespace default istio.io/dataplane-mode=ambient
+kubectl apply -f samples/sleep/notsleep.yaml -n default
 
-kubectl label namespace httpbin istio-injection=enabled --overwrite=true
+# in ambient mode
+kubectl get namespace bookinfo &> /dev/null || kubectl create namespace bookinfo
+kubectl label namespace bookinfo istio.io/dataplane-mode=ambient
+kubectl apply -f samples/bookinfo/bookinfo.yaml -n bookinfo
 
-# Deploy httpbin
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: httpbin
-  namespace: httpbin
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: httpbin
-  namespace: httpbin
-  labels:
-    app: httpbin
-    service: httpbin
-spec:
-  ports:
-  - name: http
-    port: 8000
-    targetPort: 80
-  selector:
-    app: httpbin
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: httpbin
-  namespace: httpbin
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: httpbin
-      version: v1
-  template:
-    metadata:
-      labels:
-        app: httpbin
-        version: v1
-    spec:
-      serviceAccountName: httpbin
-      containers:
-      - image: us-central1-docker.pkg.dev/solo-test-236622/solo-demos/httpbin:v2.11.0
-        imagePullPolicy: IfNotPresent
-        name: httpbin
-        ports:
-        - containerPort: 80
-EOF
-
-# Deploy helloworld
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Service
-metadata:
-  name: helloworld
-  labels:
-    app: helloworld
-    service: helloworld
-spec:
-  ports:
-  - port: 5000
-    name: http
-  selector:
-    app: helloworld
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: helloworld-v1
-  labels:
-    app: helloworld
-    version: v1
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: helloworld
-      version: v1
-  template:
-    metadata:
-      labels:
-        app: helloworld
-        version: v1
-    spec:
-      containers:
-      - name: helloworld
-        image: docker.io/istio/examples-helloworld-v1
-        resources:
-          requests:
-            cpu: "100m"
-        imagePullPolicy: IfNotPresent #Always
-        ports:
-        - containerPort: 5000
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: helloworld-v2
-  labels:
-    app: helloworld
-    version: v2
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: helloworld
-      version: v2
-  template:
-    metadata:
-      labels:
-        app: helloworld
-        version: v2
-    spec:
-      containers:
-      - name: helloworld
-        image: docker.io/istio/examples-helloworld-v2
-        resources:
-          requests:
-            cpu: "100m"
-        imagePullPolicy: IfNotPresent #Always
-        ports:
-        - containerPort: 5000
-EOF
+# in sidecar mode
+kubectl get namespace helloworld &> /dev/null || kubectl create namespace helloworld
+kubectl label namespace helloworld istio-injection=enabled --overwrite=true
+kubectl apply -f samples/helloworld/helloworld.yaml -n helloworld
 
 # curl 
 # kubectl run curl --image=radial/busyboxplus:curl -i --tty --rm

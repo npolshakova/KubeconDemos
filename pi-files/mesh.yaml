@@ -1,15 +1,15 @@
 defaultConfig:
   discoveryAddress: istiod.istio-system.svc:15012
-  meshId: mesh1
   proxyMetadata:
     CANONICAL_REVISION: latest
     CANONICAL_SERVICE: hello-pi
-    ISTIO_META_CLUSTER_ID: cluster1
+    ISTIO_META_AUTO_REGISTER_GROUP: hello-pi
+    ISTIO_META_CLUSTER_ID: Kubernetes
     ISTIO_META_DNS_AUTO_ALLOCATE: "true"
     ISTIO_META_DNS_CAPTURE: "true"
     ISTIO_META_DNS_PROXY_ADDR: 127.0.0.1:15053
     ISTIO_META_ENABLE_HBONE: "true"
-    ISTIO_META_MESH_ID: mesh1
+    ISTIO_META_MESH_ID: ""
     ISTIO_META_NETWORK: ""
     ISTIO_META_WORKLOAD_NAME: hello-pi
     ISTIO_METAJSON_LABELS: '{"app":"hello-pi","service.istio.io/canonical-name":"hello-pi","service.istio.io/canonical-revision":"latest"}'
