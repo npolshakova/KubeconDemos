@@ -126,6 +126,8 @@ If you wish to build your own ztunnel, clone the repo to where you want to build
 cargo build --no-default-features
 ```
 
+See the `ztunnel/build-deb-ztunnel.sh` script for more instructions on building a `.deb` and cross-compiling.
+
 # Running
 
 ***
@@ -137,7 +139,7 @@ Before you get started, clone the repo on the local linux machine with `git` and
 ## 1. Setup a kind cluster on the linux machine
 
 ```bash
-./kind-provisioner.sh
+./kind/kind-provisioner.sh
 ```
 
 ## 2. Setup networking
@@ -149,7 +151,7 @@ There are two parts to setting up networking, enable the pod and services on the
 All of the network setup (both on the linux machine and the pi) can be done using the script:
 
 ```bash
-sudo ./setup-network.sh <pi-address>  <pi-username>
+sudo ./networking/setup-networking.sh <pi-address>  <pi-username>
 ```
 
 ### Manual steps
@@ -177,6 +179,20 @@ sudo ip route add $SERVICE_POD_CIDR via $NODE_IP dev $BRIDGE_DEVICE
 
 You may be able to skip the `dev $BRIDGE_DEVICE` part if only one device is routable to the docker container IP, since linux *should* infer it needs to send packets to it on its own.
 
+You should now be able to ping pods running in the Kind cluster directly from your machine with the pod IP. Get a pod IP via:
+
+``` 
+❯ kubectl get pods -A -o wide
+NAMESPACE            NAME                                             READY   STATUS    RESTARTS   AGE   IP           
+default              curl                                             1/1     Running   0          66m   10.244.0.7   
+kube-system          coredns-5d78c9869d-2bwjx                         1/1     Running   0          90m   10.244.0.2   
+kube-system          coredns-5d78c9869d-nbjp7                         1/1     Running   0          90m   10.244.0.4   
+kube-system          etcd-cluster1-control-plane                      1/1     Running   0          91m   172.18.0.3   
+kube-system          kindnet-8vmzp                                    1/1     Running   0          90m   172.18.0.3   
+```
+
+And then check you get a response with something like: `ping 10.244.0.7`.
+
 Add rule so we don't drop packets coming from the pi: 
 ```bash
 sudo iptables -t filter -A FORWARD -d "$SERVICE_POD_CIDR" -j ACCEPT
@@ -195,7 +211,7 @@ Where the `CLUSTER_ADDRESS` is the address of your host linux machine running th
 ## 3. Setup Istio 
 
 ```bash
-./istio-setup.sh <pi-address> <pi-username>
+./istio/istio-setup.sh <pi-address> <pi-username>
 ```
 
 ## 4. Setup example apps (bookinfo, helloworld, sleep)
@@ -203,7 +219,7 @@ Where the `CLUSTER_ADDRESS` is the address of your host linux machine running th
 Apply some simple applications to the cluster to demonstrate ambient and sidecar modes in the cluster:
 
 ```bash
-./example-app-install.sh
+./example_apps/example-apps-install.sh
 ```
 
 Now we're all done with the setup on the linux side! Before we head over to the pi, we need to grab the kubernetes cluster east-west gateway cluster IP address via: 
@@ -223,7 +239,8 @@ RASPBERRY PI SETUP
 Copy the setup file over to the pi with `scp`:
 
 ```bash
-scp pi-setup-sidecar.sh <username>@<pi-addr>:<path-to-script-dir>
+scp sidecar/pi-setup-sidecar.sh <username>@<pi-addr>:<path-to-script-dir>
+scp ztunnel/pi-setup-ztunnel.sh <username>@<pi-addr>:<path-to-script-dir>
 ```
 
 Now it's time to ssh into the pi and run the scripts to setup!
@@ -333,7 +350,7 @@ As part of our demo, we use NeoPixels and the WS2812b led strip. You can find a 
 We wrap the WS2812b python library with a simple Flask webserver. To run this server:
 
 ```bash 
-sudo python3 ./piWebServer/led_strip_rainbow.py 
+sudo python3 ./pi_web_server/led_strip_rainbow.py 
 ```
 
 This will run on port `8080` and will be reachable via: 
@@ -344,8 +361,8 @@ http://<raspberry-pi>:8080/switch
 
 To apply the Kubernetes service, run: 
 
-``` 
-kubectl apply -f pi-service-config/teapot-setup.yaml
+```bash
+kubectl apply -f pi_service_config/teapot-setup.yaml
 ```
 
 Then you will be able to curl once Istio is running via:
@@ -360,7 +377,7 @@ As part of our demo, we use a [MSNSwitch](https://msnswitch.com/) to control out
 We wrap the MSNSwitch APIs with a simple Flask webserver. To run this server:
 
 ```bash 
-sudo python3 ./MSNSwitchServer/switch_app.py 
+sudo python3 ./msn_switch_server/switch_app.py 
 ```
 
 This has serveral paths:
@@ -382,7 +399,7 @@ http://<raspberry-pi>:80/switchTwo/on
 To apply the Kubernetes service, run: 
 
 ``` 
-kubectl apply -f pi-service-config/teapot-setup.yaml
+kubectl apply -f pi_service_config/teapot-setup.yaml
 ```
 
 Then you will be able to curl once Istio is running via:
@@ -390,7 +407,7 @@ Then you will be able to curl once Istio is running via:
 curl teapot-pi.pi-namespace:80/switchTwo/on
 ```
 
-## Resources 
+## Additional Resources 
 
 - [Istio Virtual Machine Onboarding Guide](https://istio.io/latest/docs/setup/install/virtual-machine/)
 - [Getting Started with Ambient Mesh](https://istio.io/latest/docs/ops/ambient/getting-started/)
