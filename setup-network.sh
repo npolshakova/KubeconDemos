@@ -45,7 +45,7 @@ iptables -t filter -L FORWARD | grep "$SERVICE_POD_CIDR"
 
 # Alternative: sudo ifconfig | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | head -n 1
 # Or: ip -j address show dev eth0 | jq -r '.[0].addr_info[0].local' 
-CLUSTER_ADDRESS=$(ip route | grep default | awk '{print $3}' | head -n 1)
+CLUSTER_ADDRESS=$(ip route | grep default | awk '{print $9}' | head -n 1)
 
 # example: ip route add 10.0.0.0/8 via 192.168.8.168
 ssh $PI_USERNAME@$PI_ADDRESS sudo ip route add $SERVICE_POD_CIDR via $CLUSTER_ADDRESS

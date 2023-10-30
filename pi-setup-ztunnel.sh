@@ -25,6 +25,11 @@ echo "Using PI_FILE_PATH: $PI_FILE_PATH"
 sudo iptables-apply ztunnel-iptables-rules
 sudo iptables -t nat -A OUTPUT ! -o lo -p udp -m udp --dport 53 -m owner ! --uid-owner 999 -j DNAT --to-destination $PI_INTERNAL_IP:15053
 
+# create istio-proxy user if this does not exist yet 
+groupadd --system istio-proxy
+useradd --system --gid istio-proxy --home-dir /var/lib/istio istio-proxy
+
+# install the pre-built ztunnel
 sudo dpkg -i ztunnel_0.0.0-1_arm64.deb 
 
 # Setup pi files 

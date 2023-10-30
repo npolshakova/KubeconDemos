@@ -51,4 +51,4 @@ def action(deviceName, action):
     return render_template('index.html', **templateData)
 if __name__ == "__main__":
    #app.run(host='0.0.0.0', port=80, debug=True)
-   app.run(host='2601:184:407f:81bf:e5bd:d0c1:96b2:82c1', port=80, debug=True)
+   app.run(host='2601:184:407f:81bf:e5bd:d0c1:96b2:82c1', port=8080, debug=True)

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # need istioctl installed
-source ~/.zshrc
+source ~/.bashrc
 
 # Provide the pi address and username as an argument
 if [ $# -ne 2 ]; then

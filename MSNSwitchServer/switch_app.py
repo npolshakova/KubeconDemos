@@ -124,4 +124,4 @@ if __name__ == '__main__':
     # toggle_response = requests.get(toggle_url, headers={'Cookie': set_cookie_header})
     # print(toggle_response.text)
 
-    app.run()
+    app.run(host='0.0.0.0', port=80, debug=True)
