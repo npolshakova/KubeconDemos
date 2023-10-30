@@ -1,17 +1,24 @@
-# curl -H "tea-drinker: nina" teapot-app.pi-namespace:8080
+# curl -H "tea-drinker: nina" teapot-pi.pi-namespace:80/switchOne/on
+# curl teapot-pi.pi-namespace:80/switchOne/on
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: teapot-app-fault-injection
   namespace: pi-namespace
 spec:
+  exportTo: 
+  - default
   hosts:
-  - teapot-app
+  - teapot-pi
   http:
   - match:
     - headers:
         tea-drinker:
           exact: nina
+    headers:
+     response:
+      add:
+       test: "I'm a teapot!"
     fault:
      abort:
         httpStatus: 418
@@ -19,4 +26,4 @@ spec:
           value: 100
     route:
     - destination:
-        host: teapot-app
+        host: teapot-pi

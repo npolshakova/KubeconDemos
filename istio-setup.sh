@@ -99,10 +99,10 @@ metadata:
   name: "${PI_APP}"
   namespace: "${PI_NAMESPACE}"
 spec:
-  address: "${$PI_ADDRESS}"
+  address: "${PI_ADDRESS}"
   labels:
     app: "${PI_APP}"
-  serviceAccount: "${$SERVICE_ACCOUNT}"
+  serviceAccount: "${SERVICE_ACCOUNT}"
 EOF
 
 # Copy the files to the pi
