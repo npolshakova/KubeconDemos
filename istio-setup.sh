@@ -107,7 +107,7 @@ EOF
 
 # Copy the files to the pi
 # ssh-copy-id 192.168.0.58
-scp pi-files/* $PI_USERNAME@$PI_ADDRESS:~/pi-files
+scp -r pi-files $PI_USERNAME@$PI_ADDRESS:~
 
 # Optionally, you may also want to add an SSH key if not already done to avoid password prompts during the SCP operation.
 # ssh-copy-id "$PI_USERNAME@$PI_ADDRESS"

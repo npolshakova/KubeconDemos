@@ -45,6 +45,6 @@ sudo cp $PI_FILE_PATH/mesh.yaml ./etc/istio/config/mesh
 echo "${ISTIO_EW_ADDRESS} istiod.istio-system.svc" | sudo tee -a /etc/hosts
 
 sudo mkdir -p ./etc/istio/proxy
-sudo chown -R istio-proxy ./var/lib/istio /etc/certs ./etc/istio/proxy ./var/run/secrets /etc/certs/root-cert.pem ./var/run/secrets/istio/root-cert.pem ./etc/istio/config/mesh 
+sudo chown -R istio-proxy ./var/lib/istio /etc/certs ./etc/istio/proxy ./var/run/secrets /etc/certs/root-cert.pem ./var/run/secrets/istio/root-cert.pem ./etc/istio/config/ ./etc/istio/config/mesh 
 
 sudo -u istio-proxy CA_ADDRESS="istiod.istio-system.svc:15012" XDS_ADDRESS="istiod.istio-system.svc:15012" CLUSTER_ID=Kubernetes RUST_LOG=debug ISTIO_META_ENABLE_HBONE=true ISTIO_META_DNS_CAPTURE=true ISTIO_META_DNS_AUTO_ALLOCATE=true ISTIO_META_DNS_PROXY_ADDR="127.0.0.1:15053" ztunnel
