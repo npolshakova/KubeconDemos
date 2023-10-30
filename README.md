@@ -1,4 +1,11 @@
-# KubeconDemos
+# KubeconDemo: Istio Pi
+
+You want to onboard your Raspberry Pi into your Istio mesh? Well, here ya go:
+
+- [Requirements](#Requirements)
+- [Running](#Running)
+- [Testing](#Testing)
+- [Fancy Testing](#✨-fancy-testing-✨)
 
 # Requirements 
 
@@ -72,20 +79,22 @@ kubectl version
 
 ## Istioctl
 
+In order to run Istio, we need to install [istioctl](https://istio.io/latest/docs/setup/getting-started/). The scripts will use this cli tool in order to install istio on the Kind cluster and onboard the Raspberry Pi into the mesh.
+
 First install `istioctl`:
 
 ```bash
 curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.19.0  sh -
 ```
 
-Remember to export the Istio path:
+Remember to export the Istio path and add it to your bashrc/zshrc file:
 ``` 
 export PATH="$PATH:<path-to-istio>"
 ```
 
 ## jq 
 
-The scripts use `jq` to format and parse JASON. Install `jq` with a package manager via: 
+The scripts use [jq](https://manpages.org/jq) to format and parse JASON. Install `jq` with a package manager via: 
 
 ```bash 
 sudo apt-get install jq
@@ -94,11 +103,10 @@ sudo apt-get install jq
 
 ## Rasberry Pi ARM 64-bit
 
-Download Raspberry pi imager: https://www.raspberrypi.com/software/
-Select Raspberry pi OS (64-bit) Debian Bullseye with Raspberry Pi Desktop and write to microSD card. Use advanced setup to set hostname, username, password, and enable ssh.
-Connect microSD card to pi, complete setup
-
-Test ssh to make sure you can connect with the pi. 
+1. Download Raspberry pi imager: https://www.raspberrypi.com/software/
+2. Select Raspberry pi OS (64-bit) Debian Bookwork with Raspberry Pi Desktop and write to microSD card. Use advanced setup to set hostname, username, password, and enable ssh.
+3. Connect microSD card to pi, complete setup on the pi
+4. Test ssh to make sure you can connect with the pi. 
 
 If you are unsure of the IP address of the raspberry pi, you can find ip address by scanning what's running on the network via [nmap](https://linux.die.net/man/1/nmap) which you can get with your package-manager with `apt-get install nmap`:
 
@@ -106,7 +114,7 @@ If you are unsure of the IP address of the raspberry pi, you can find ip address
 nmap -sP 192.168.0.1-255
 ```
 
-# Building ztunnel on ARM64 
+## Building ztunnel on ARM64 
 
 [ztunnel](https://github.com/istio/ztunnel) is the "zero-trust tunnel" that provides L4 policy enforcement in the ambient mesh. 
 
@@ -121,7 +129,7 @@ cargo build --no-default-features
 # Running
 
 ***
-Cluster Setup
+KIND CLUSTER SETUP
 ***
 
 Before you get started, clone the repo on the local linux machine with `git` and make sure you have `sudo` access.
@@ -207,7 +215,7 @@ kubectl get svc -n istio-system
 Remember, since we are running on a flat network and have exposed our pod/service cidrs from the Kind cluster, we do not need the external IP for the gateway, just the Cluster-IP.
 
 ***
-Pi Setup
+RASPBERRY PI SETUP
 ***
 
 ## 5. Setup pi 
@@ -252,7 +260,11 @@ You can view the logs of sidecar Istio running in the raspberry pi with:
 cat /var/log/istio/istio.log
 ```
 
-The admin pannel for both sidecar and ztunnel can be viewed on `localhost:15000`. The config dump is found at `localhost:15000/config_dump`
+The admin pannel for both sidecar and ztunnel can be viewed on `localhost:15000`. The config dump is found at `localhost:15000/config_dump`. You can view these in a browser if you ssh into the pi with the port forwarding setup via: 
+
+```
+ssh -X -L 15000:localhost:15000 <username>@<pi-address>
+```
 
 ## Pi -> Cluster 
 

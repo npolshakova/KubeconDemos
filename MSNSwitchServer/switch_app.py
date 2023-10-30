@@ -19,6 +19,7 @@ def control_switch(target, control):
     control_response = requests.get(control_url, headers={'Cookie': set_cookie_header})
     print(control_response.text)
 
+# example: curl http://192.168.0.68/cgi-bin/control.cgi\?target\=2\&control\=2\&csrftoken\=Bl5Up8FcFE3U4J65c -H "Cookie: WQKJhuEcnAVA3t7WE+ug6A=bWFu0IfNfeDuEjGFN"
 @app.route("/switchOne/toggle")
 def switchOneToggle():
     global switchOne, switchTwo
@@ -94,7 +95,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     login_url = f'http://{args.ip}/goform/login'
-    print(login_url)
     headers = {
         'Accept': '*/*',
         'Accept-Encoding': 'gzip, deflate',
@@ -102,12 +102,11 @@ if __name__ == '__main__':
     }
     responseCookie = requests.post(login_url, data=data, stream=True, headers=headers)
     set_cookie_header = responseCookie.headers.get('Set-Cookie')
-    print(set_cookie_header)
 
+    # example: curl -X POST -H "Accept: */*" -H "Accept-Encoding: gzip, deflate" -H "Content-Type: application/x-www-form-urlencoded" --data "user=admin&password=switch818" http:/192.168.0.68/goform/login -i | awk -F' ' '/Set-Cookie/{print $2}' | cut -d'=' -f2 | sed 's/;$//'
     # Send a GET request to the web page
     home_url = f'http://{args.ip}/index.asp'
     response = requests.get(home_url, headers={'Cookie': set_cookie_header})
-    print(response.text)
 
     # Check if the request was successful
     if response.status_code == 200:
@@ -116,12 +115,5 @@ if __name__ == '__main__':
 
     # Find the CSRF token by inspecting the page source
     csrf_token = soup.find('input')['value']
-    print(csrf_token)
-
-    # toggle=2
-    # toggle_url = f'http://{args.ip}/cgi-bin/control.cgi?target=2&control=2&csrftoken={csrf_token}'
-    # print(toggle_url)
-    # toggle_response = requests.get(toggle_url, headers={'Cookie': set_cookie_header})
-    # print(toggle_response.text)
 
     app.run(host='0.0.0.0', port=80, debug=True)
