@@ -438,7 +438,7 @@ EOF
 }
 
 export NODE_IMAGE="gcr.io/istio-testing/kind-node:v1.27.3"
-export DEFAULT_CLUSTER_YAML="kind-config.yaml"
+export DEFAULT_CLUSTER_YAML="$COMMON_SCRIPTS/kind-config.yaml"
 export ARTIFACTS="${ARTIFACTS:-$(mktemp -d)}"
 export CLEANUP=false 
 export SKIP_CLEANUP=true
