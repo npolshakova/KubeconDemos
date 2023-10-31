@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Setup linux networking for kind cluster
-kind_function() {
+kind_setup() {
   echo "Running Kind cluster networking setup"
   
   NODE_IP="172.18.0.2" # change this based on kind config 
@@ -32,15 +32,16 @@ kind_function() {
 }
 
 # SSH and setup raspberry pi networking
-pi_function() {
+pi_setup() {
   if [ "$run_local_pi" = true ]; then
     echo "Running pi networking setup locally"
-    echo "CLUSTER ADDRESS: $CLUSTER_ADDRESS"
+    echo "CLUSTER_ADDRESS: $CLUSTER_ADDRESS"
     sudo ip route add $SERVICE_POD_CIDR via $CLUSTER_ADDRESS
   else
     echo "Running pi networking setup via ssh"
     echo "PI_ADDRESS: $PI_ADDRESS"
     echo "PI_USERNAME: $PI_USERNAME"
+    echo "CLUSTER_ADDRESS: $CLUSTER_ADDRESS"
 
     # Fix how ztunnel handles dns queries
     # NOTE: Only set for ztunnel case
@@ -103,12 +104,12 @@ fi
 
 # Check which functions to run
 if [ "$run_all" = true ]; then
-  pi_function
-  kind_function
+  kind_setup
+  pi_setup
 elif [ "$run_pi" = true ]; then
-  pi_function
+  pi_setup
 elif [ "$run_kind" = true ]; then
-  kind_function
+  kind_setup
 else
   echo "No valid flags provided. Use --all, --pi, or --kind."
 fi
