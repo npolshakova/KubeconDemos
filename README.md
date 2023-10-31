@@ -228,8 +228,16 @@ Where the `CLUSTER_ADDRESS` is the address of your host linux machine running th
 
 ## 3. Setup Istio 
 
+First install the Istio control plane in Ambient mode along with the east-west gateway:
+
 ```bash
-./istio/istio-setup.sh <pi-address> <pi-username>
+./istio/istio-install.sh
+```
+
+Next, create the necessary resources in the cluster to onboard the Raspeberry Pi:
+
+```bash
+./istio/istio-install.sh <pi-address> <pi-username>
 ```
 
 ## 4. Setup example apps (bookinfo, helloworld, sleep)
