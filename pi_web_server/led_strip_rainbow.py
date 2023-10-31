@@ -12,19 +12,11 @@ LED_BRIGHTNESS = 100  # Set to 0 for darkest and 255 for brightest
 LED_INVERT = False    # True to invert the signal (when using NPN transistor level shift)
 LED_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
-colors = [ Color(0, 0, 0), Color(0, 255, 0), Color(255, 0, 0) ]
-color_index = 0
-
 strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
 
 @app.route("/")
 def index():
-    templateData = {
-        'r': colors[color_index].r,
-        'g': colors[color_index].g,
-        'b': colors[color_index].b,
-    }
-    return render_template('led.html', **templateData)
+    return render_template('led.html')
 
 def wheel(pos):
     """Generate rainbow colors across 0-255 positions."""
@@ -58,14 +50,7 @@ def rainbowCycle(strip, wait_ms=20, iterations=5):
 @app.route("/switch")
 def action():
     rainbow(strip)
-    global color_index
-    color_index = (color_index + 1) % 3
-    templateData = {
-        'r': colors[color_index].r,
-        'g': colors[color_index].g,
-        'b': colors[color_index].b,
-    }
-    return render_template('led.html', **templateData)
+    return render_template('led.html')
 
 if __name__ == "__main__":
     # Initialize library before calling other functions
