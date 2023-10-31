@@ -3,6 +3,9 @@
 # need istioctl installed
 source ~/.bashrc
 
+# COMMON_SCRIPTS contains the directory this file is in.
+COMMON_SCRIPTS=$(dirname "${BASH_SOURCE:-$0}")
+
 # Setup env for installing Istio
 # Customize values for multi-cluster/multi-network as needed
 # Demo will assume single network setup
@@ -35,14 +38,14 @@ EOF
 istioctl install -f pi-cluster.yaml --set values.pilot.env.PILOT_ENABLE_WORKLOAD_ENTRY_AUTOREGISTRATION=true --set values.pilot.env.ISTIOD_SAN="istiod.istio-system.svc"
 
 # Install east-west gateway
-# Multinetwork:  multicluster/gen-eastwest-gateway.sh \
+# Multinetwork:  $COMMON_SCRIPTS/multicluster/gen-eastwest-gateway.sh \
 # --mesh mesh1 --cluster "${CLUSTER}" --network "${CLUSTER_NETWORK}" | \
 # istioctl install -y -f -
 
 # Singlenetwork:
-multicluster/gen-eastwest-gateway.sh --single-cluster | istioctl install -y -f -
+$COMMON_SCRIPTS/multicluster/gen-eastwest-gateway.sh --single-cluster | istioctl install -y -f -
 
 # Expose istiod 
-kubectl apply -f multicluster/expose-istiod.yaml
+kubectl apply -f $COMMON_SCRIPTS/multicluster/expose-istiod.yaml
 # Expose svcs (only need for multinetwork setup)
-# kubectl apply -n istio-system -f multicluster/expose-services.yaml
+# kubectl apply -n istio-system -f $COMMON_SCRIPTS/multicluster/expose-services.yaml

@@ -1,2 +1,4 @@
 pi-files
 workloadgroup.yaml
+pi-cluster.yaml
+kind-config.yaml
