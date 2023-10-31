@@ -53,17 +53,17 @@ EOF
 istioctl install -f pi-cluster.yaml --set values.pilot.env.PILOT_ENABLE_WORKLOAD_ENTRY_AUTOREGISTRATION=true --set values.pilot.env.ISTIOD_SAN="istiod.istio-system.svc"
 
 # Install east-west gateway
-# Multinetwork:  samples/multicluster/gen-eastwest-gateway.sh \
+# Multinetwork:  multicluster/gen-eastwest-gateway.sh \
 # --mesh mesh1 --cluster "${CLUSTER}" --network "${CLUSTER_NETWORK}" | \
 # istioctl install -y -f -
 
 # Singlenetwork:
-samples/multicluster/gen-eastwest-gateway.sh --single-cluster | istioctl install -y -f -
+multicluster/gen-eastwest-gateway.sh --single-cluster | istioctl install -y -f -
 
 # Expose istiod 
-kubectl apply -f samples/multicluster/expose-istiod.yaml
+kubectl apply -f multicluster/expose-istiod.yaml
 # Expose svcs (only need for multinetwork setup)
-# kubectl apply -n istio-system -f samples/multicluster/expose-services.yaml
+# kubectl apply -n istio-system -f multicluster/expose-services.yaml
 
 # Create Pi Namespace and ServiceAccount
 kubectl get namespace "$PI_NAMESPACE" &> /dev/null || kubectl create namespace "$PI_NAMESPACE"

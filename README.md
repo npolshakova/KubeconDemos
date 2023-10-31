@@ -151,7 +151,25 @@ There are two parts to setting up networking, enable the pod and services on the
 All of the network setup (both on the linux machine and the pi) can be done using the script:
 
 ```bash
-sudo ./networking/setup-networking.sh <pi-address>  <pi-username>
+sudo ./networking/setup-networking.sh --all <pi-address>  <pi-username>
+```
+
+To run only the kind networking setup:
+
+```bash
+sudo ./networking/setup-networking.sh --kind
+```
+
+To run only the pi networking setup (over ssh):
+
+```bash
+sudo ./networking/setup-networking.sh --pi <pi-address>  <pi-username>
+```
+
+To run only the pi networking setup locally (not over ssh):
+
+```bash
+sudo ./networking/setup-networking.sh --pi local-pi  <cluster-address>
 ```
 
 ### Manual steps
