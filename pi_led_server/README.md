@@ -1,1 +1,1 @@
-https://github.com/rpi-ws281x/rpi-ws281x-python
+LEDs use: https://github.com/rpi-ws281x/rpi-ws281x-python
