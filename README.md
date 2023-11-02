@@ -255,9 +255,15 @@ Apply some simple applications to the cluster to demonstrate ambient and sidecar
 
 Next, create the necessary resources in the cluster to onboard the Raspeberry Pi:
 
+**If doing Istio sidecar-mode** 
 ```bash
-./istio/istio-onboard-pi.sh <pi-address> <pi-username>
+./istio/istio-onboard-pi.sh <pi-address> <pi-username> 
 ```
+**If doing Istio ztunnel mode**
+```bash
+./istio/istio-onboard-pi.sh <pi-address> <pi-username> --ztunnel
+```
+
 
 Now we're all done with the setup on the linux side! Before we head over to the pi, we need to grab the kubernetes cluster east-west gateway cluster IP address via: 
 
