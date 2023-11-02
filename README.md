@@ -275,8 +275,12 @@ RASPBERRY PI SETUP
 
 Copy the setup directory over to the pi with `scp`:
 
+**If doing Istio sidecar-mode** 
 ```bash
 scp -r setup-sidecar <username>@<pi-addr>:<path-to-script-dir>
+```
+**If doing Istio ztunnel mode**
+```bash
 scp -r setup-ztunnel <username>@<pi-addr>:<path-to-script-dir>
 ```
 
