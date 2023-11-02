@@ -247,7 +247,7 @@ First install the Istio control plane in Ambient mode along with the east-west g
 Next, create the necessary resources in the cluster to onboard the Raspeberry Pi:
 
 ```bash
-./istio/istio-install.sh <pi-address> <pi-username>
+./istio/istio-onboard-pi.sh <pi-address> <pi-username>
 ```
 
 ## 4. Setup example apps (bookinfo, helloworld, sleep)
