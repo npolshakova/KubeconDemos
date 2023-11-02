@@ -349,7 +349,7 @@ Policies applied to the mesh will also be applied to traffic coming from the pi.
 Run a simple python server on the pi on the commandline via: 
 
 ```bash
-sudo python3 -m http.server 80
+sudo python3 -m http.server 9080
 ```
 
 Create a service for a simple python on the cluster:
@@ -364,9 +364,9 @@ metadata:
     app: hello-pi
 spec:
   ports:
-  - port: 80
+  - port: 9080
     name: http-pi
-    targetPort: 80
+    targetPort: 9080
   selector:
     app: hello-pi
 EOF
@@ -381,7 +381,7 @@ kubectl run netshoot  --image=nicolaka/netshoot -i --tty --rm
 Then send a request from the container: 
 
 ``` 
-curl hello-pi.pi-namespace:80
+curl hello-pi.pi-namespace:9080
 ```
 
 ## Pi -> Pi
@@ -389,7 +389,7 @@ curl hello-pi.pi-namespace:80
 Now that your Raspberry Pis are on the mesh, they also now know about applications running on each pi! After following the instructions described in the Cluster -> Pi, section keep the python3 server running, and run this directly from the second pi (the one *not* running the python server):
 
 ``` 
-curl hello-pi.pi-namespace:80
+curl hello-pi.pi-namespace:9080
 ```
 
 ## Istio Policy 
