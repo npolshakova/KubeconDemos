@@ -69,7 +69,7 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
  name: hello-l7-pi
- namespace: default
+ namespace: ${PI_NAMESPACE}
 spec:
  selector:
    matchLabels:
@@ -90,7 +90,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: httpbin-headers
-  namespace: pi-namespace
+  namespace: ${PI_NAMESPACE}
 spec:
   exportTo: 
   - "*"
@@ -115,7 +115,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: teapot-app-fault-injection
-  namespace: pi-namespace
+  namespace: ${PI_NAMESPACE}
 spec:
   exportTo: 
   - "*"
