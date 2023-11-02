@@ -283,7 +283,7 @@ Now it's time to ssh into the pi and run the scripts to setup!
 
 ### Running in sidecar mode
 
-In order to setup and run the sidecar version, run the following script with `sudo` permissions on the pi:
+`ssh` into the pi and then `cd` into the `setup-sidecar` directory you copied over earlier. In order to setup and run the sidecar version, run the following script with `sudo` permissions on the pi:
 
 ```bash 
 sudo ./pi-setup-sidecar.sh <istio-ew-svc-internal-address> <opt-path-to-pi-files>
@@ -293,7 +293,7 @@ Where `istio-ew-svc-internal-address` is the Cluster-IP of the east-west gateway
 
 ### Running in ztunnel mode
 
-In order to setup and run the ztunnel version, run the following script with `sudo` permissions on the pi:
+`ssh` into the pi and then `cd` into the `setup-ztunnel` directory you copied over earlier. In order to setup and run the ztunnel version, run the following script with `sudo` permissions on the pi:
 
 ```bash 
 sudo ./pi-setup-ztunnel.sh <istio-ew-svc-internal-address> <opt-path-to-pi-files>
