@@ -339,7 +339,7 @@ ssh -X -L 15000:localhost:15000 <username>@<pi-address>
 You should now be able to hit services from the raspberry pi via their hostnames: 
 
 ```bash 
-curl ratings.bookinfo:9080/ratings/1 -v
+curl helloworld.helloworld:5000/hello
 ```
 
 Policies applied to the mesh will also be applied to traffic coming from the pi.
@@ -354,22 +354,8 @@ sudo python3 -m http.server 9080
 
 Create a service for a simple python on the cluster:
 
-```bash 
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Service
-metadata:
-  name: hello-pi
-  labels:
-    app: hello-pi
-spec:
-  ports:
-  - port: 9080
-    name: http-pi
-    targetPort: 9080
-  selector:
-    app: hello-pi
-EOF
+```
+./python-server-setup.sh <ip_of_pi>
 ```
 
 Make sure your `default` namespace is labeled with either istio injection or for ambient mode. Then run a curl container (such as [netshoot](https://github.com/nicolaka/netshoot)) in the `default` namespace to test: 
@@ -395,6 +381,12 @@ curl hello-pi.pi-namespace:9080
 ## Istio Policy 
 
 Authorization policies are applied on the *server* side. The ztunnel can only enforce L4 policies, but the sidecar or waypoint will be able to enforce L7 policies.  
+
+Before applying the policies, head to the *policies* folder and run the the following script
+
+```
+./export-env.sh <ip_of_1st_pi> <ip_of_2nd_pi>
+```
 
 ### Auth Policy Pi (ztunnel) -> Cluster (sidecar)
 
