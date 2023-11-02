@@ -20,7 +20,7 @@ ztunnel_mode=false
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -f|--flag)
-            flag=true
+            ztunnel_mode=true
             shift
             ;;
         *)
