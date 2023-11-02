@@ -313,6 +313,8 @@ Where `istio-ew-svc-internal-address` is the Cluster-IP of the east-west gateway
 To test if the onboarding process was successful we need to check that communication works between the Pi -> Cluster and Cluster -> Pi.
 </summary>
 
+## Check the Pi is getting xDS updates
+
 Now that Istio is running, the Raspberry Pis' are recieving `xDS` (discovery service) updates. [xDS](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/operations/dynamic_configuration) is a group of APIs (endpoint/cluster/route/listener/secret/...) that are used to dynamically configured Envoy (or ztunnel).
 
 You can view the logs of sidecar Istio running in the raspberry pi with: 
@@ -389,19 +391,19 @@ curl hello-pi.pi-namespace:80
 
 Authorization policies are applied on the *server* side. The ztunnel can only enforce L4 policies, but the sidecar or waypoint will be able to enforce L7 policies.  
 
-# Auth Policy Pi (ztunnel) -> Cluster (sidecar)
+### Auth Policy Pi (ztunnel) -> Cluster (sidecar)
 
 ```bash 
 kubectl apply -f policies/l4pi_auth.yaml
 ```
 
-# Auth Policy Cluster (ztunnel) -> Pi (ztunnel)
+### Auth Policy Cluster (ztunnel) -> Pi (ztunnel)
 
 ```bash 
 kubectl apply -f policies/l7pi_auth.yaml
 ```
 
-# Client side L7 policy on pi (needs to be running sidecar on pi) 
+### Client side L7 policy on pi (needs to be running sidecar on pi) 
 
 Apply policy:
 
@@ -421,7 +423,7 @@ Then send traffic:
 
 ```
 
-# Client side L7 policy on cluster (needs to be running waypoint/sidecar on cluster)
+### Client side L7 policy on cluster (needs to be running waypoint/sidecar on cluster)
 
 Apply policy:
 
