@@ -30,7 +30,8 @@ groupadd --system istio-proxy
 useradd --system --gid istio-proxy --home-dir /var/lib/istio istio-proxy
 
 # install the pre-built ztunnel
-sudo dpkg -i ztunnel_0.0.0-1_arm64.deb 
+# TODO: uncomment to install ztunnel if not present on system
+#sudo dpkg -i ztunnel_0.0.0-1_arm64.deb 
 
 # Setup pi files 
 sudo mkdir -p ./var/run/secrets/tokens ./var/run/secrets/istio ./var/lib/istio/ztunnel
@@ -51,5 +52,8 @@ echo "${ISTIO_EW_ADDRESS} istiod.istio-system.svc" | sudo tee -a /etc/hosts
 
 sudo mkdir -p ./etc/istio/proxy
 sudo chown -R istio-proxy ./var/lib/istio /etc/certs ./etc/istio/proxy ./var/run/secrets /etc/certs/root-cert.pem ./var/run/secrets/istio/root-cert.pem ./etc/istio/config/ ./etc/istio/config/mesh 
+
+echo "Running ztunnel with:"
+echo "sudo -u istio-proxy PROXY_MODE=dedicated CA_ADDRESS="istiod.istio-system.svc:15012" XDS_ADDRESS="istiod.istio-system.svc:15012" CLUSTER_ID=Kubernetes RUST_LOG=debug ISTIO_META_ENABLE_HBONE=true ISTIO_META_DNS_CAPTURE=true ISTIO_META_DNS_AUTO_ALLOCATE=true ISTIO_META_DNS_PROXY_ADDR="127.0.0.1:15053" ztunnel"
 
 sudo -u istio-proxy PROXY_MODE=dedicated CA_ADDRESS="istiod.istio-system.svc:15012" XDS_ADDRESS="istiod.istio-system.svc:15012" CLUSTER_ID=Kubernetes RUST_LOG=debug ISTIO_META_ENABLE_HBONE=true ISTIO_META_DNS_CAPTURE=true ISTIO_META_DNS_AUTO_ALLOCATE=true ISTIO_META_DNS_PROXY_ADDR="127.0.0.1:15053" ztunnel

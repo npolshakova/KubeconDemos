@@ -7,7 +7,7 @@ metadata:
   namespace: pi-namespace
 spec:
   exportTo: 
-  - default
+  - "*"
   hosts:
   - teapot-pi
   http:

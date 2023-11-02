@@ -16,6 +16,10 @@ You want to onboard your Raspberry Pi into your Istio mesh? Well, here ya go:
 - [jq](#jq)
 - [Raspberry Pi ARM 64-bit](#pi)
 
+<details>
+
+<summary>Follow the instructions to install the required tools:</summary>
+
 ## Docker
 
 The scripts (and Kind) require Docker Engine to be installed before getting started. You can follow `these instructions`(https://docs.docker.com/engine/install/ubuntu/) to install docker on linux.
@@ -126,9 +130,15 @@ If you wish to build your own ztunnel, clone the repo to where you want to build
 cargo build --no-default-features
 ```
 
-See the `ztunnel/build-deb-ztunnel.sh` script for more instructions on building a `.deb` and cross-compiling.
+See the `setup-ztunnel/build-deb-ztunnel.sh` script for more instructions on building a `.deb` and cross-compiling.
+
+</details>
 
 # Running
+
+<details>
+
+<summary>In order to onboard the Pi into the mesh and get Istio running there are two parts: 1) Kind cluster setup, 2) Raspberry Pi setup. </summary>
 
 ***
 KIND CLUSTER SETUP
@@ -262,11 +272,11 @@ RASPBERRY PI SETUP
 
 ## 5. Setup pi 
 
-Copy the setup file over to the pi with `scp`:
+Copy the setup directory over to the pi with `scp`:
 
 ```bash
-scp sidecar/pi-setup-sidecar.sh <username>@<pi-addr>:<path-to-script-dir>
-scp ztunnel/pi-setup-ztunnel.sh <username>@<pi-addr>:<path-to-script-dir>
+scp -r setup-sidecar <username>@<pi-addr>:<path-to-script-dir>
+scp -r setup-ztunnel <username>@<pi-addr>:<path-to-script-dir>
 ```
 
 Now it's time to ssh into the pi and run the scripts to setup!
@@ -293,7 +303,15 @@ Where `istio-ew-svc-internal-address` is the Cluster-IP of the east-west gateway
 
 **Note** There are some known issues running ztunnel from the home directory. If the script fails with permission errors, create a sub directory and run the ztunnel setup from there. Remember to include the path to the `pi-files` directory in this case.
 
+</details>
+
 # Testing 
+
+<details>
+
+<summary>
+To test if the onboarding process was successful we need to check that communication works between the Pi -> Cluster and Cluster -> Pi.
+</summary>
 
 Now that Istio is running, the Raspberry Pis' are recieving `xDS` (discovery service) updates. [xDS](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/operations/dynamic_configuration) is a group of APIs (endpoint/cluster/route/listener/secret/...) that are used to dynamically configured Envoy (or ztunnel).
 
@@ -367,7 +385,71 @@ Now that your Raspberry Pis are on the mesh, they also now know about applicatio
 curl hello-pi.pi-namespace:80
 ```
 
+## Istio Policy 
+
+Authorization policies are applied on the *server* side. The ztunnel can only enforce L4 policies, but the sidecar or waypoint will be able to enforce L7 policies.  
+
+# Auth Policy Pi (ztunnel) -> Cluster (sidecar)
+
+```bash 
+kubectl apply -f policies/l4pi_auth.yaml
+```
+
+# Auth Policy Cluster (ztunnel) -> Pi (ztunnel)
+
+```bash 
+kubectl apply -f policies/l7pi_auth.yaml
+```
+
+# Client side L7 policy on pi (needs to be running sidecar on pi) 
+
+Apply policy:
+
+```bash 
+kubectl apply -f policies/pi_headers.yaml
+```
+
+Test:
+
+```bash
+kubectl run netshoot --image=nicolaka/netshoot -i --tty --rm 
+```
+
+Then send traffic:
+
+```
+
+```
+
+# Client side L7 policy on cluster (needs to be running waypoint/sidecar on cluster)
+
+Apply policy:
+
+```bash 
+kubectl apply -f policies/teapot_faultinjection_cluster.yaml
+```
+
+Test (remember the helloworld namespace is labeled for istio injection):
+
+```bash
+kubectl run netshoot -n helloworld --image=nicolaka/netshoot -i --tty --rm 
+```
+
+Then send traffic:
+
+```
+curl teapot-pi.pi-namespace:80/switchOne/on
+curl -H "tea-drinker: nina" teapot-pi.pi-namespace:80/switchOne/on
+```
+
+</details>
+
 # ✨ Fancy Testing ✨
+
+<details>
+
+<summary>Instead of testing with a simple python server, we can hook up some ✨ fancy ✨ hardware to our pi to make a more compelling illustration of onboarding the Pi into the mesh. </summary>
+
 
 ## LEDs 
 
@@ -432,6 +514,8 @@ Then you will be able to curl once Istio is running via:
 ```bash 
 curl teapot-pi.pi-namespace:80/switchTwo/on
 ```
+
+</details>
 
 ## Additional Resources 
 

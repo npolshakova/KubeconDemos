@@ -1,0 +1,15 @@
+# Access policy applied to the ztunnel pod
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+ name: hello-l4-pi
+ namespace: default
+spec:
+ selector:
+   matchLabels:
+     app: ${PI_APP_ZTUNNEL}
+ action: DENY
+ rules:
+ - from:
+   - source:
+       principals: ["cluster.local/ns/default/sa/sleep"]

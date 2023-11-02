@@ -1,0 +1,19 @@
+# curl helloworld.helloworld:5000/hello -v 
+# curl -H "X-Test: istio-is-cool" helloworld.helloworld:5000/hello -v
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+ name: helloworld-l7-access
+ namespace: helloworld
+spec:
+ selector:
+   matchLabels:
+     app: helloworld
+ action: ALLOW
+ rules:
+ - from:
+   - source:
+       principals: ["cluster.local/ns/pi-namespace/sa/$PI_SERVICE_ACCOUNT_ZTUNNEL"]
+   when:
+   - key: request.headers[X-Test]
+     values: ["istio-is-cool"]

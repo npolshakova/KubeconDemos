@@ -1,15 +1,19 @@
+# curl -H "X-Test: istio-is-cool" hello-pi.pi-namespace:80
 # curl -H "X-Test: istio-is-cool" led-app.pi-namespace:80
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
- name: helloworld-allow
+ name: hello-l7-pi
  namespace: default
 spec:
  selector:
    matchLabels:
-     app: helloworld
- action: ALLOW
+     app: ${PI_APP_SIDECAR}
+ action: DENY
  rules:
  - from:
    - source:
        principals: ["cluster.local/ns/default/sa/sleep"]
+   when:
+   - key: request.headers[X-Test]
+     values: ["istio-is-cool"]

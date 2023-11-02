@@ -1,0 +1,24 @@
+*nat
+:PREROUTING ACCEPT [18:1709]
+:INPUT ACCEPT [23:2065]
+:OUTPUT ACCEPT [7:2682]
+:POSTROUTING ACCEPT [8:2778]
+:ISTIO_INBOUND - [0:0]
+:ISTIO_IN_REDIRECT - [0:0]
+:ISTIO_OUTPUT - [0:0]
+:ISTIO_REDIRECT - [0:0]
+[5:356] -A PREROUTING -p tcp -j ISTIO_IN_REDIRECT
+[1:96] -A OUTPUT -p tcp -j ISTIO_OUTPUT
+[0:0] -A ISTIO_INBOUND -p tcp -m tcp --dport 15008 -j ACCEPT
+[1:60] -A ISTIO_IN_REDIRECT -p tcp -m tcp --dport 22 -j ACCEPT
+[4:296] -A ISTIO_IN_REDIRECT -p tcp -j REDIRECT --to-ports 15006
+[0:0] -A ISTIO_OUTPUT -s 127.0.0.6/32 -o lo -j RETURN
+[0:0] -A ISTIO_OUTPUT -o lo -m owner ! --uid-owner 999 -j RETURN
+[0:0] -A ISTIO_OUTPUT -m owner --uid-owner 999 -j RETURN
+[0:0] -A ISTIO_OUTPUT ! -d 127.0.0.1/32 -o lo -p tcp -m tcp ! --dport 15008 -m owner --gid-owner 999 -j ISTIO_IN_REDIRECT
+[0:0] -A ISTIO_OUTPUT -o lo -m owner ! --gid-owner 999 -j RETURN
+[0:0] -A ISTIO_OUTPUT -m owner --gid-owner 999 -j RETURN
+[0:0] -A ISTIO_OUTPUT -d 127.0.0.1/32 -j RETURN
+[1:96] -A ISTIO_OUTPUT -j ISTIO_REDIRECT
+[1:96] -A ISTIO_REDIRECT -p tcp -j REDIRECT --to-ports 15001
+COMMIT
