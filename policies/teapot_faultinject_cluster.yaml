@@ -27,3 +27,5 @@ spec:
     route:
     - destination:
         host: teapot-pi
+        port:
+          number: 80

@@ -16,13 +16,21 @@ PI_USERNAME="$2"
 # Initialize ztunnel to be false by default
 ztunnel_mode=false
 # Check if the ztunnel flag is provided as a command line argument
+# Check for the required arguments and the flag
 while [[ $# -gt 0 ]]; do
-    case "$3" in
-        -f|--ztunnel)
-            ztunnel_mode=true
+    case "$1" in
+        -f|--flag)
+            flag=true
             shift
             ;;
         *)
+            if [ -z "$PI_ADDRESS" ]; then
+                PI_ADDRESS="$1"
+            elif [ -z "$PI_USERNAME" ]; then
+                PI_USERNAME="$1"
+            fi
+            shift
+            ;;
     esac
 done
 
