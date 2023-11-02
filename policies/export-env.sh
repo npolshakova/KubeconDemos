@@ -50,7 +50,7 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
  name: hello-l4-pi
- namespace: default
+ namespace: ${PI_NAMESPACE}
 spec:
  selector:
    matchLabels:
