@@ -4,8 +4,8 @@
 source ~/.bashrc
 
 # Provide the pi address and username as an argument
-if [ $# -le 2 ]; then
-    echo "Usage: $0 <pi_address> <pi_username>"  "[--ztunnel]"
+if [ $# -lt 2 ]; then
+    echo "Usage: $0 <pi_address> <pi_username>" "[--ztunnel]"
     exit 1
 fi
 
@@ -51,7 +51,7 @@ mkdir -p $WORK_DIR
 # Create Pi Namespace and ServiceAccount
 kubectl get namespace "$PI_NAMESPACE" &> /dev/null || kubectl create namespace "$PI_NAMESPACE"
 # label namespace for ambient mode if running ztunnel
-if [ "$run_all" = true ]; then
+if [ "$ztunnel_mode" = true ]; then
 kubectl label namespace "$PI_NAMESPACE" istio.io/dataplane-mode=ambient
 fi 
 kubectl get serviceaccount "${SERVICE_ACCOUNT}" -n "${PI_NAMESPACE}" &> /dev/null || kubectl create serviceaccount "${SERVICE_ACCOUNT}" -n "${PI_NAMESPACE}"
@@ -77,7 +77,7 @@ kubectl --namespace "${PI_NAMESPACE}" apply -f workloadgroup.yaml
 # Optionally include --autoregister flag, but we are manually creating the WE for ztunnel to have the ambient label
 istioctl x workload entry configure -f workloadgroup.yaml -o "${WORK_DIR}" --clusterID "${CLUSTER}" --tokenDuration=86400
 
-if [ "$run_all" = true ]; then
+if [ "$ztunnel_mode" = true ]; then
 # Ztunnel setup needs to manually create workloadentry with ambient label: 
 kubectl apply -f - <<EOF
 apiVersion: networking.istio.io/v1alpha3

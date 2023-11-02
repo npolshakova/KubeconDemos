@@ -13,7 +13,7 @@ spec:
  rules:
  - from:
    - source:
-       principals: ["cluster.local/ns/pi-namespace/sa/$PI_SERVICE_ACCOUNT_ZTUNNEL"]
+       principals: ["cluster.local/ns/pi-namespace/sa/pi-sa-192.168.1.178"]
    when:
    - key: request.headers[X-Test]
      values: ["istio-is-cool"]

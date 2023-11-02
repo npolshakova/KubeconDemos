@@ -8,7 +8,7 @@ metadata:
 spec:
  selector:
    matchLabels:
-     app: ${PI_APP_SIDECAR}
+     app: hello-pi-123
  action: DENY
  rules:
  - from:
