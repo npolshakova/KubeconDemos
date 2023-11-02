@@ -244,18 +244,19 @@ First install the Istio control plane in Ambient mode along with the east-west g
 ./istio/istio-install.sh
 ```
 
-Next, create the necessary resources in the cluster to onboard the Raspeberry Pi:
-
-```bash
-./istio/istio-onboard-pi.sh <pi-address> <pi-username>
-```
-
 ## 4. Setup example apps (bookinfo, helloworld, sleep)
 
 Apply some simple applications to the cluster to demonstrate ambient and sidecar modes in the cluster:
 
 ```bash
 ./example_apps/example-apps-install.sh
+```
+## 5. Create on-board config for Pi
+
+Next, create the necessary resources in the cluster to onboard the Raspeberry Pi:
+
+```bash
+./istio/istio-onboard-pi.sh <pi-address> <pi-username>
 ```
 
 Now we're all done with the setup on the linux side! Before we head over to the pi, we need to grab the kubernetes cluster east-west gateway cluster IP address via: 
@@ -270,7 +271,7 @@ Remember, since we are running on a flat network and have exposed our pod/servic
 RASPBERRY PI SETUP
 ***
 
-## 5. Setup pi 
+## 6. Setup pi 
 
 Copy the setup directory over to the pi with `scp`:
 
