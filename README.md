@@ -347,19 +347,26 @@ You should now be able to hit services from the raspberry pi via their hostnames
 ```bash 
 curl helloworld.helloworld:5000/hello
 ```
-Let's apply a policy on the cluster side to block HTTP requests.
+
+Let's apply a policy on the cluster side to block HTTP requests. First, let's take a look at the policy we want to apply:
+
+```bash 
+cat policies/helloworld_l7cluster_auth.yaml
 ```
+
+Apply the policy
+
+```bash
 kubectl apply -f policies/helloworld_l7cluster_auth.yaml
 ```
 
-It should fail
-
+It should fail with 403:
 ```bash 
-curl -v helloworld.helloworld:5000/hello
+curl -v helloworld.helloworld:5000/hello -v
 ```
 
-Re-run with the following header and the request should be successful.
-```
+Re-run with the following header and the request should be successful:
+```bash
 curl -H "X-Test: istio-is-cool" helloworld.helloworld:5000/hello -v
 ``` 
 
@@ -475,6 +482,12 @@ curl -H "tea-drinker: nina" teapot-pi.pi-namespace:80/switchOne/on
 
 As part of our demo, we use NeoPixels and the WS2812b led strip. You can find a great (open source!) wiring guide here on [AdaFruit](https://learn.adafruit.com/neopixels-on-raspberry-pi/overview).
 
+We need to create a K8s Service to map to the app running on the pi. To apply the Kubernetes service, run: 
+
+```bash
+./pi_service_config/led-setup.sh <pi-address>
+```
+
 We wrap the WS2812b python library with a simple Flask webserver. To run this server:
 
 ```bash 
@@ -487,14 +500,39 @@ This will run on port `8080` and will be reachable via:
 http://<raspberry-pi>:8080/switch
 ```
 
-To apply the Kubernetes service, run: 
-
-```bash
-kubectl apply -f pi_service_config/teapot-setup.yaml
+Since we have Istio running on the pi, we are able to curl with the `led-pi.pi-namespace` hostname via from the sleep pod:
+```bash 
+curl led-pi.pi-namespace:8080/switch
 ```
 
-Then you will be able to curl once Istio is running via:
+Now let's apply an authorization policy on the server side. This L4 policy is enforced on the Pi side in the ztunnel:
+
 ```bash 
+cat policies/l4pi_auth.yaml
+```
+
+Apply the policy on the cluster side:
+
+```bash
+kubectl apply -f policies/l4pi_auth.yaml
+```
+
+Now let's try sending the same curl as before from the sleep pod. We expect to be denied because of the L4 policy we just applied: 
+
+```bash
+curl led-pi.pi-namespace:8080/switch
+```
+
+Let's try running a curl from a different pod that does not use the sleep service account:
+
+```bash
+kubectl run netshoot --image=nicolaka/netshoot -i --tty --rm 
+```
+
+Sending traffic from the netshoot pod should work even though netshoot is in the same namespace as sleep because netshoot is using 
+a different SA. 
+
+```bash
 curl led-pi.pi-namespace:8080/switch
 ```
 

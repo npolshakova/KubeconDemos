@@ -22,7 +22,7 @@ spec:
     name: http-pi
     targetPort: 80
   selector:
-    app: hello-pi 
+    app: "${PI_APP}"
 EOF
 
 # On the pi side, run sudo python3 ./msn_switch_server/msn_switch_server.py <switch-ip>

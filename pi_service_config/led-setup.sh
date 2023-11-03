@@ -22,7 +22,7 @@ spec:
     name: http-pi
     targetPort: 8080
   selector:
-    app: hello-pi 
+    app: ${PI_APP}
 EOF
 
 # On the pi side, run: sudo python3 ./pi_led_server/led_strip_rainbow.py
