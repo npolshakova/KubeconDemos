@@ -347,6 +347,21 @@ You should now be able to hit services from the raspberry pi via their hostnames
 ```bash 
 curl helloworld.helloworld:5000/hello
 ```
+Let's apply a policy on the cluster side to block HTTP requests.
+```
+kubectl apply -f policies/helloworld_l7cluster_auth.yaml
+```
+
+It should fail
+
+```bash 
+curl -v helloworld.helloworld:5000/hello
+```
+
+Re-run with the following header and the request should be successful.
+```
+curl -H "X-Test: istio-is-cool" helloworld.helloworld:5000/hello -v
+``` 
 
 Policies applied to the mesh will also be applied to traffic coming from the pi.
 
