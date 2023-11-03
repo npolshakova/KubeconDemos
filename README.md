@@ -463,7 +463,7 @@ As part of our demo, we use NeoPixels and the WS2812b led strip. You can find a 
 We wrap the WS2812b python library with a simple Flask webserver. To run this server:
 
 ```bash 
-sudo python3 ./pi_web_server/led_strip_rainbow.py 
+sudo python3 ./pi_led_server/led_strip_rainbow.py 
 ```
 
 This will run on port `8080` and will be reachable via: 
