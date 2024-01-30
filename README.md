@@ -1,6 +1,6 @@
 # KubeconDemo: Istio Pi
 
-You want to onboard your Raspberry Pi into your Istio mesh? Well, here ya go:
+So you want to onboard a Raspberry Pi into your Istio mesh? It's easy as pi... 🥧
 
 - [Requirements](#Requirements)
 - [Running](#Running)
@@ -108,7 +108,7 @@ sudo apt-get install jq
 ## Rasberry Pi ARM 64-bit
 
 1. Download Raspberry pi imager: https://www.raspberrypi.com/software/
-2. Select Raspberry pi OS (64-bit) Debian Bookwork with Raspberry Pi Desktop and write to microSD card. Use advanced setup to set hostname, username, password, and enable ssh.
+2. Select Raspberry pi OS (64-bit) Debian Bookworm with Raspberry Pi Desktop and write to microSD card. Use advanced setup to set hostname, username, password and enable ssh.
 3. Connect microSD card to pi, complete setup on the pi
 4. Test ssh to make sure you can connect with the pi. 
 
@@ -138,7 +138,7 @@ See the `setup-ztunnel/build-deb-ztunnel.sh` script for more instructions on bui
 
 <details>
 
-<summary>In order to onboard the Pi into the mesh and get Istio running there are two parts: 1) Kind cluster setup, 2) Raspberry Pi setup. </summary>
+<summary> To onboard the Pi into the mesh and get Istio running there are two parts: 1) Kind cluster setup, 2) Raspberry Pi setup. </summary>
 
 ***
 KIND CLUSTER SETUP
@@ -154,7 +154,7 @@ Before you get started, clone the repo on the local linux machine with `git` and
 
 ## 2. Setup networking
 
-There are two parts to setting up networking, enable the pod and services on the Kind cluster to be reachable from the host running the docker container, and the enable the pi to reach pods and services in the Kind cluster via the linux machine running the cluster. 
+There are two parts to setting up networking, enable the pod and services on the Kind cluster to be reachable from the host running the docker container, and enable the pi to reach pods and services in the Kind cluster via the linux machine running the cluster. 
 
 ### Automatic script
 
@@ -164,7 +164,7 @@ All of the network setup (both on the linux machine and the pi) can be done usin
 sudo ./networking/setup-networking.sh --all <pi-address>  <pi-username>
 ```
 
-To run only the kind networking setup:
+To run only the kind cluster networking setup:
 
 ```bash
 sudo ./networking/setup-networking.sh --kind
@@ -221,14 +221,14 @@ kube-system          kindnet-8vmzp                                    1/1     Ru
 
 And then check you get a response with something like: `ping 10.244.0.7`.
 
-Add rule so we don't drop packets coming from the pi: 
+Add a rule so we don't drop packets coming from the pi: 
 ```bash
 sudo iptables -t filter -A FORWARD -d "$SERVICE_POD_CIDR" -j ACCEPT
 ```
 
 #### Pi -> Cluster 
 
-1. Add routing rule to allow the pi to access the Pods and Service IPs running in the kind cluster: 
+1. Add a routing rule to allow the pi to access the Pods and Service IPs running in the kind cluster: 
 
 ```bash
 sudo ip route add $SERVICE_POD_CIDR via $CLUSTER_ADDRESS
@@ -265,13 +265,13 @@ Next, create the necessary resources in the cluster to onboard the Raspeberry Pi
 ```
 
 
-Now we're all done with the setup on the linux side! Before we head over to the pi, we need to grab the kubernetes cluster east-west gateway cluster IP address via: 
+Now we're all done with the setup on the linux side! Before we head over to the pi, we need to grab the Kubernetes cluster east-west gateway cluster IP address via: 
 
 ```bash 
 kubectl get svc -n istio-system
 ```
 
-Remember, since we are running on a flat network and have exposed our pod/service cidrs from the Kind cluster, we do not need the external IP for the gateway, just the Cluster-IP.
+Remember, since we are running on a flat network and have exposed our pod/service CIDRs from the Kind cluster, we do not need the external IP for the gateway, just the Cluster-IP.
 
 ***
 RASPBERRY PI SETUP
@@ -294,7 +294,7 @@ Now it's time to ssh into the pi and run the scripts to setup!
 
 ### Running in sidecar mode
 
-`ssh` into the pi and then `cd` into the `setup-sidecar` directory you copied over earlier. In order to setup and run the sidecar version, run the following script with `sudo` permissions on the pi:
+`ssh` into the pi and then `cd` into the `setup-sidecar` directory you copied over earlier. To setup and run the sidecar version, run the following script with `sudo` permissions on the pi:
 
 ```bash 
 sudo ./pi-setup-sidecar.sh <istio-ew-svc-internal-address> <opt-path-to-pi-files>
@@ -304,7 +304,7 @@ Where `istio-ew-svc-internal-address` is the Cluster-IP of the east-west gateway
 
 ### Running in ztunnel mode
 
-`ssh` into the pi and then `cd` into the `setup-ztunnel` directory you copied over earlier. In order to setup and run the ztunnel version, run the following script with `sudo` permissions on the pi:
+`ssh` into the pi and then `cd` into the `setup-ztunnel` directory you copied over earlier. To setup and run the ztunnel version, run the following script with `sudo` permissions on the pi:
 
 ```bash 
 sudo ./pi-setup-ztunnel.sh <istio-ew-svc-internal-address> <opt-path-to-pi-files>
@@ -312,7 +312,7 @@ sudo ./pi-setup-ztunnel.sh <istio-ew-svc-internal-address> <opt-path-to-pi-files
 
 Where `istio-ew-svc-internal-address` is the Cluster-IP of the east-west gateway service running on the Kind cluster.
 
-**Note** There are some known issues running ztunnel from the home directory. If the script fails with permission errors, create a sub directory and run the ztunnel setup from there. Remember to include the path to the `pi-files` directory in this case.
+**Note** There are some known issues running ztunnel from the home directory. If the script fails with permission errors, create a subdirectory and run the ztunnel setup from there. Remember to include the path to the `pi-files` directory in this case.
 
 </details>
 
@@ -326,7 +326,7 @@ To test if the onboarding process was successful we need to check that communica
 
 ## Check the Pi is getting xDS updates
 
-Now that Istio is running, the Raspberry Pis' are recieving `xDS` (discovery service) updates. [xDS](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/operations/dynamic_configuration) is a group of APIs (endpoint/cluster/route/listener/secret/...) that are used to dynamically configured Envoy (or ztunnel).
+Now that Istio is running, the Raspberry Pis' are receiving `xDS` (discovery service) updates. [xDS](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/operations/dynamic_configuration) is a group of APIs (endpoint/cluster/route/listener/secret/...) that are used to dynamically configure Envoy (or ztunnel).
 
 You can view the logs of sidecar Istio running in the raspberry pi with: 
 
@@ -334,7 +334,7 @@ You can view the logs of sidecar Istio running in the raspberry pi with:
 cat /var/log/istio/istio.log
 ```
 
-The admin pannel for both sidecar and ztunnel can be viewed on `localhost:15000`. The config dump is found at `localhost:15000/config_dump`. You can view these in a browser if you ssh into the pi with the port forwarding setup via: 
+The admin panel for both sidecar and ztunnel can be viewed on `localhost:15000`. The config dump is found at `localhost:15000/config_dump`. You can view these in a browser if you ssh into the pi with the port forwarding setup via: 
 
 ```
 ssh -X -L 15000:localhost:15000 <username>@<pi-address>
@@ -374,7 +374,7 @@ Policies applied to the mesh will also be applied to traffic coming from the pi.
 
 ## Cluster -> Pi 
 
-Run a simple python server on the pi on the commandline via: 
+Run a simple python server on the pi on the command line via: 
 
 ```bash
 sudo python3 -m http.server 9080
@@ -410,7 +410,7 @@ curl hello-pi.pi-namespace:9080
 
 Authorization policies are applied on the *server* side. The ztunnel can only enforce L4 policies, but the sidecar or waypoint will be able to enforce L7 policies.  
 
-Before applying the policies, head to the *policies* folder and run the the following script
+Before applying the policies, head to the *policies* folder and run the following script
 
 ```
 ./export-env.sh <ip_of_1st_pi> <ip_of_2nd_pi>
@@ -500,7 +500,7 @@ This will run on port `8080` and will be reachable via:
 http://<raspberry-pi>:8080/switch
 ```
 
-Since we have Istio running on the pi, we are able to curl with the `led-pi.pi-namespace` hostname via from the sleep pod:
+Since we have Istio running on the pi, we can curl with the `led-pi.pi-namespace` hostname via from the sleep pod:
 ```bash 
 curl led-pi.pi-namespace:8080/switch
 ```
@@ -546,7 +546,7 @@ We wrap the MSNSwitch APIs with a simple Flask webserver. To run this server:
 sudo python3 ./msn_switch_server/switch_app.py 
 ```
 
-This has serveral paths:
+This has several paths:
 ``` 
 switchOne/on
 switchOne/off 
